@@ -9,6 +9,8 @@
 
 ## 🚀 Quick start
 
+This is a web editor for SkiesGUI config made for Stampede's [SkiesGUI](https://github.com/PokeSkies/SkiesGUIs)
+
 1.  **Start developing.**
 
     Navigate into your the site’s directory and start it up.
