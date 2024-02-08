@@ -164,7 +164,7 @@ const PageStyles = styled.div`
     margin-top: 0.5rem;
     margin-left: auto;
     margin-right: auto;
-    font-size: 0.75rem;
+    font-size: 0.6rem;
     color: #000;
   }
 
@@ -184,7 +184,8 @@ const PageStyles = styled.div`
 
       input {
         margin-top: 1rem;
-        font-size: 1rem;
+        font-size: 0.8rem;
+        padding: 0.3rem 0.5rem;
         width: 500px;
         // center the input
         margin-left: auto;
