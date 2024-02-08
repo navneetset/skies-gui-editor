@@ -1,9 +1,4 @@
 /* src/styles/global.css */
-html,
-body {
-    margin: 0;
-    padding: 0;
-}
 
 .icon-minecraft,
 .icon-minecraft-sm {
@@ -176,7 +171,10 @@ body {
     background-position: -272px 0;
 }
 
-.icon-minecraft-air {
+/* .icon-minecraft-air {
+    background-position: -576px 0;
+} */
+.icon-minecraft-unknown {
     background-position: -576px 0;
 }
 

@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { minecraftIcons } from "../resources/minecraft-icons";
 import CreatableSelect from "react-select/creatable";
 import styled from "styled-components";
+import { Item } from "../interface/item";
 
 interface ItemSelectionProps {
-  selectedItem: any;
-  setSelectedItem: (item: any) => void;
+  selectedItem: Item;
+  setSelectedItem: (item: Item) => void;
 }
 
 const ItemSelection = ({
@@ -17,7 +18,10 @@ const ItemSelection = ({
     label: `minecraft:${icon.name}`,
   }));
 
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(selectedItem?.material || "");
+  const selectedOption = selectOptions.find(
+    (option) => option.value === selectedItem?.material
+  );
 
   const checkIconExists = (iconName: string) => {
     return !!minecraftIcons.find((icon) => icon.css === iconName);
@@ -33,24 +37,37 @@ const ItemSelection = ({
       : "icon-minecraft-mob-ghast-face";
   };
 
+  const getTrimmedIconName = (iconName: string) => {
+    return iconName.replace("icon-minecraft-", "");
+  };
+
   return (
     <SelectStyles
       options={selectOptions}
-      value={selectedItem}
-      onChange={(option) => setSelectedItem(option)}
+      value={selectedOption} // Set the selected option here
+      onChange={(option) => {
+        console.log(option);
+        if (option) {
+          setSelectedItem({
+            name: option.label,
+            material: option.value,
+            icon: getTrimmedIconName(getIconName(option.value)),
+          });
+        }
+      }}
       onInputChange={(inputValue) => setInputValue(inputValue)}
       isSearchable={true}
       isClearable={true}
       placeholder="Search or enter an item name"
+      formatCreateLabel={(inputValue) => `Custom: ${inputValue}`}
       isValidNewOption={(inputValue) => {
         return inputValue.startsWith("");
       }}
-      formatCreateLabel={(inputValue) => `Custom: ${inputValue}`}
       formatOptionLabel={(option) => (
         <>
-          {/* @ts-ignore */}
+          {/** @ts-ignore */}
           <i className={`icon-minecraft ${getIconName(option.value)}`} />
-          {/* @ts-ignore */}
+          {/** @ts-ignore */}
           <span style={{ marginLeft: "8px" }}>{option.label}</span>
         </>
       )}
@@ -64,4 +81,5 @@ const SelectStyles = styled(CreatableSelect)`
   font-size: 0.75rem;
   width: 600px;
   color: #000;
+  margin-top: 10px;
 `;

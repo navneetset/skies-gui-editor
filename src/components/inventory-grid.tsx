@@ -47,8 +47,7 @@ const ChestInventory = styled.div<{
   border-radius: 3px;
   border: 2px solid #000;
   box-shadow: 5px 5px 0px #555555, inset 2px 2px 0px #fefefe;
-  padding-top: 5px;
-  padding-left: 5px;
+  padding: 5px;
   margin-bottom: 10px;
 
   .inventory-header {
