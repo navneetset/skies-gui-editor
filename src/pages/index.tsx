@@ -211,7 +211,6 @@ const PageStyles = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 2rem;
     width: 100%;
 
     .input-container {
