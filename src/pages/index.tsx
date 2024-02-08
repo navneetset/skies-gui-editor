@@ -1,13 +1,13 @@
 import * as React from "react";
 import type { HeadFC, PageProps } from "gatsby";
 import { createGlobalStyle } from "styled-components";
-import { minecraftIcons } from "../resources/minecraft-icons";
 import styled from "styled-components";
 import { useState } from "react";
 import { Item } from "../interface/item";
 import Header from "../components/header";
-import InventoryItem from "../components/inventory-item";
 import InventoryGrid from "../components/inventory-grid";
+import CreatableSelect from "react-select/creatable";
+import ItemSelection from "../components/item-selection";
 
 const GlobalStyle = createGlobalStyle`
   html, body {
@@ -22,7 +22,7 @@ const GlobalStyle = createGlobalStyle`
   font-size: 1.5rem;
   height: 100%;
   min-height: 100vh;
-  background-color: #6f6060;
+  background-color: #2e2e2e;
   color: #e9e9e9;
   }
 `;
@@ -52,30 +52,8 @@ const IndexPage: React.FC<PageProps> = () => {
 
   const [items, setItems] = useState(defaultItems as Item[]);
   const [uiName, setUiName] = useState("SkiesGUI");
-
-  const placeholderItem = {
-    name: "gray-stained-glass-pane",
-    material: "minecraft:gray_stained_glass_pane",
-    icon: "gray-stained-glass-pane",
-    buyPrice: 0,
-    sellPrice: 0,
-    commands: [],
-  };
-
-  const renderItem = (item: any, index: number) => {
-    return (
-      <InventoryItem
-        key={index}
-        item={item}
-        onMouseEnter={() => {
-          setHoveredItem({ item, x: index % 9, y: Math.floor(index / 9) });
-        }}
-        onMouseLeave={() => {
-          setHoveredItem({ item: null, x: 0, y: 0 });
-        }}
-      />
-    );
-  };
+  const [selectedItem, setSelectedItem] = useState("" as any);
+  const [allItems, setAllItems] = useState([] as any);
 
   return (
     <>
@@ -94,6 +72,46 @@ const IndexPage: React.FC<PageProps> = () => {
               setHoveredItem({ item: null, x: 0, y: 0 });
             }}
           />
+          <div className="editor">
+            <h2>Editor</h2>
+            <div className="input-container">
+              <label>UI Name</label>
+              <input
+                value={uiName}
+                onChange={(e) => setUiName(e.target.value)}
+              />
+            </div>
+            <div className="input-container">
+              <label>Inventory Rows</label>
+              <CreatableSelect
+                className="row-input"
+                options={[
+                  { value: 1, label: 1 },
+                  { value: 2, label: 2 },
+                  { value: 3, label: 3 },
+                  { value: 4, label: 4 },
+                  { value: 5, label: 5 },
+                  { value: 6, label: 6 },
+                ]}
+                value={{ value: inventoryRows, label: inventoryRows }}
+                onChange={(option) => {
+                  setInventoryRows(option?.value as number);
+                  setItems(
+                    Array(inventoryRowMap[option?.value as number]).fill({})
+                  );
+                }}
+              />
+            </div>
+            <div className="input-container">
+              <div className="react-select-container">
+                <ItemSelection
+                  selectedItem={selectedItem}
+                  setSelectedItem={setSelectedItem}
+                />
+              </div>
+              <button className="add-item">Add Item</button>
+            </div>
+          </div>
         </PageStyles>
       </main>
     </>
@@ -126,6 +144,13 @@ const PageStyles = styled.div`
     margin-bottom: 2rem;
   }
 
+  h2 {
+    font-family: "Roboto mono", "Courier New", "Courier", "monospace";
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 0;
+  }
+
   .item-cards-container {
     display: flex;
     flex-wrap: wrap;
@@ -135,23 +160,43 @@ const PageStyles = styled.div`
     gap: 1rem;
   }
 
-  .item-input {
-    margin-top: 1rem;
-    font-size: 1rem;
-    width: 500px;
+  .row-input {
+    margin-top: 0.5rem;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 0.75rem;
+    color: #000;
   }
 
-  .react-select-container {
-    margin-top: 1rem;
+  .editor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 2rem;
     width: 100%;
-  }
 
-  .react-select__control {
-    background: #c6c6c6;
-    border: 1px solid #000;
-    font-family: Minecraftia;
-    font-weight: bold;
-    font-size: 1rem;
+    .input-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 1rem;
+      width: 100%;
+
+      input {
+        margin-top: 1rem;
+        font-size: 1rem;
+        width: 500px;
+        // center the input
+        margin-left: auto;
+        margin-right: auto;
+        color: #000;
+      }
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-family: Minecraftia;
+    }
   }
 
   .add-item {
@@ -162,7 +207,7 @@ const PageStyles = styled.div`
     background: #c6c6c6;
     font-family: Minecraftia;
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 0.75rem;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
 

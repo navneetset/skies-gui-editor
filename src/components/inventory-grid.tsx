@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import InventoryItem from "./inventory-item";
+import deserializeMiniMessage from "./deserialize-mini-message";
 
 interface InventoryGridProps {
   uiName: string;
@@ -17,19 +18,19 @@ const InventoryGrid = ({
   onItemMouseEnter,
   onItemMouseLeave,
 }: InventoryGridProps) => (
-    <ChestInventory className="inventory-grid" rows={rows}>
-        <div className="inventory-header">
-            <span>{uiName}</span>
-        </div>
-        {items.map((item, index) => (
-            <InventoryItem
-                key={`${item.name}-${index}`}
-                item={item}
-                onMouseEnter={(e: React.MouseEvent) => onItemMouseEnter(e, item)}
-                onMouseLeave={onItemMouseLeave}
-            />
-        ))}
-    </ChestInventory>
+  <ChestInventory className="inventory-grid" rows={rows}>
+    <div className="inventory-header">
+      <span>{deserializeMiniMessage(uiName)}</span>
+    </div>
+    {items.map((item, index) => (
+      <InventoryItem
+        key={`${item.name}-${index}`}
+        item={item}
+        onMouseEnter={(e: React.MouseEvent) => onItemMouseEnter(e, item)}
+        onMouseLeave={onItemMouseLeave}
+      />
+    ))}
+  </ChestInventory>
 );
 
 export default InventoryGrid;
