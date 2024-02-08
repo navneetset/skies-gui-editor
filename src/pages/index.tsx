@@ -176,7 +176,7 @@ const IndexPage: React.FC<PageProps> = () => {
                 onChange={(e) => setUiName(e.target.value)}
               />
             </div>
-            <div className="input-container">
+            <div className="input-container inline">
               <label>Inventory Rows</label>
               <CreatableSelect
                 className="row-input"
@@ -307,6 +307,12 @@ const PageStyles = styled.div`
       align-items: center;
       margin-top: 1rem;
       width: 100%;
+
+      &.inline {
+        flex-direction: row;
+        justify-content: space-between;
+        width: 250px;
+      }
 
       input {
         margin-top: 0.3rem;
