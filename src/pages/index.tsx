@@ -9,6 +9,7 @@ import CreatableSelect from "react-select/creatable";
 import BackgroundItems from "../components/background-items";
 import GlobalStylesComponent from "../styles/GlobalStyles";
 import ConfigModal from "../components/config-modal";
+import { Config, exportConfig } from "../resources/export-config";
 
 const IndexPage: React.FC<PageProps> = () => {
   const [hoveredItem, setHoveredItem] = useState<{
@@ -39,18 +40,28 @@ const IndexPage: React.FC<PageProps> = () => {
     icon: "blue-stained-glass-pane",
   };
 
-  const [backgroundItem, setBackgroundItem] = useState(blueStainedGlass);
-
   const [items, setItems] = useState(defaultItems as Item[]);
   const [uiName, setUiName] = useState("<dark_purple>SkiesGUI</dark_purple>");
   const [selectedItem, setSelectedItem] = useState("" as any);
 
+  const [backgroundItem, setBackgroundItem] = useState(blueStainedGlass);
   const [backgroundSlots, setBackgroundSlots] = useState(
     "0,1,2,3,4,5,6,7,8,9,17,18,19,20,21,22,23,24,25,26"
   );
   const [backgroundItemName, setBackgroundItemName] = useState(" ");
+  const [enableBackground, setEnableBackground] = useState(true);
 
   useEffect(() => {
+    // if background is not enabled, then set all items to air
+    if (!enableBackground) {
+      setItems(
+        items.map((item) => {
+          return { name: "air", material: "minecraft:air", icon: "air" };
+        })
+      );
+      return;
+    }
+
     // update allItems state when backgroundItem changes
     // check if the backgroundSlots are valid and are all numbers
     const slotsToFill = backgroundSlots.split(",");
@@ -85,10 +96,34 @@ const IndexPage: React.FC<PageProps> = () => {
     });
 
     setItems(updatedItems);
-  }, [backgroundItem, backgroundSlots, backgroundItemName, inventoryRows]);
+  }, [
+    backgroundItem,
+    backgroundSlots,
+    backgroundItemName,
+    inventoryRows,
+    enableBackground,
+  ]);
 
   const [editingSlot, setEditingSlot] = useState(-1);
   const [editModalOpen, setEditModalOpen] = useState(false);
+
+  const [config, setConfig] = useState({} as Config);
+
+  const updateConfig = () => {
+    const newConfig: Config = {
+      title: uiName,
+      size: inventoryRows,
+    };
+
+    setConfig(newConfig);
+  };
+
+  useEffect(() => {
+    if (Object.keys(config).length > 0) {
+      // Check if config is not empty
+      exportConfig(config);
+    }
+  }, [config]);
 
   return (
     <>
@@ -117,6 +152,8 @@ const IndexPage: React.FC<PageProps> = () => {
             setEditingSlot={setEditingSlot}
             setEditModalOpen={setEditModalOpen}
           />
+          <button onClick={updateConfig}>Export</button>
+
           <div className="editor">
             <div className="input-container">
               <label>UI Name</label>
@@ -146,14 +183,24 @@ const IndexPage: React.FC<PageProps> = () => {
                 }}
               />
             </div>
-            <BackgroundItems
-              backgroundSlots={backgroundSlots}
-              backgroundItem={backgroundItem}
-              backgroundItemName={backgroundItemName}
-              setBackgroundSlots={setBackgroundSlots}
-              setBackgroundItem={setBackgroundItem}
-              setBackgroundItemName={setBackgroundItemName}
-            />
+            <div className="input-container">
+              <label>Background</label>
+              <input
+                type="checkbox"
+                checked={enableBackground}
+                onChange={(e) => setEnableBackground(e.target.checked)}
+              />
+              {enableBackground && (
+                <BackgroundItems
+                  backgroundSlots={backgroundSlots}
+                  backgroundItem={backgroundItem}
+                  backgroundItemName={backgroundItemName}
+                  setBackgroundSlots={setBackgroundSlots}
+                  setBackgroundItem={setBackgroundItem}
+                  setBackgroundItemName={setBackgroundItemName}
+                />
+              )}
+            </div>
           </div>
         </PageStyles>
       </main>
