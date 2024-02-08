@@ -45,7 +45,7 @@ const ItemSelection = ({
     <SelectStyles
       options={selectOptions}
       value={selectedOption} // Set the selected option here
-      onChange={(option) => {
+      onChange={(option: any) => {
         console.log(option);
         if (option) {
           setSelectedItem({

@@ -39,7 +39,6 @@ const BackgroundItems = ({
       <div className="input-container">
         <label>Background Slots (Comma Separated)</label>
         <textarea
-          className="import-config"
           style={{ height: "3rem" }}
           value={backgroundSlots}
           onChange={(e) => setBackgroundSlots(e.target.value)}

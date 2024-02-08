@@ -7,28 +7,44 @@ interface InventoryGridProps {
   uiName: string;
   rows: number;
   items: any[];
+  editingSlot: number;
+  editModalOpen: boolean;
   onItemMouseEnter: (e: React.MouseEvent, item: any) => void;
   onItemMouseLeave: () => void;
+  setEditingSlot: (slot: number) => void;
+  setEditModalOpen: (open: boolean) => void;
 }
 
 const InventoryGrid = ({
   uiName,
   rows,
   items,
+  editingSlot,
+  editModalOpen,
   onItemMouseEnter,
   onItemMouseLeave,
+  setEditingSlot,
+  setEditModalOpen,
 }: InventoryGridProps) => (
   <ChestInventory className="inventory-grid" rows={rows}>
     <div className="inventory-header">
       <span>{deserializeMiniMessage(uiName)}</span>
     </div>
     {items.map((item, index) => (
-      <InventoryItem
+      <div
         key={`${item.name}-${index}`}
-        item={item}
-        onMouseEnter={(e: React.MouseEvent) => onItemMouseEnter(e, item)}
-        onMouseLeave={onItemMouseLeave}
-      />
+        onClick={() => {
+          setEditingSlot(index);
+          setEditModalOpen(true);
+        }}
+      >
+        <InventoryItem
+          key={`${item.name}-${index}`}
+          item={item}
+          onMouseEnter={(e: React.MouseEvent) => onItemMouseEnter(e, item)}
+          onMouseLeave={onItemMouseLeave}
+        />
+      </div>
     ))}
   </ChestInventory>
 );

@@ -8,6 +8,7 @@ import InventoryGrid from "../components/inventory-grid";
 import CreatableSelect from "react-select/creatable";
 import BackgroundItems from "../components/background-items";
 import GlobalStylesComponent from "../styles/GlobalStyles";
+import ConfigModal from "../components/config-modal";
 
 const IndexPage: React.FC<PageProps> = () => {
   const [hoveredItem, setHoveredItem] = useState<{
@@ -71,11 +72,11 @@ const IndexPage: React.FC<PageProps> = () => {
     }
     // then check if the slots are within the inventory range
     if (slotsToFill.some((slot) => parseInt(slot) > items.length - 1)) {
-      alert("Slot number out of range");
+      alert("Background slot numbers out of range");
       return;
     }
     // slots that are not filled with the backgroundItem should be filled with air
-    const updatedItems = items.map((item, index) => {
+    const updatedItems = items.map((_item, index) => {
       if (slotsToFill.includes(index.toString())) {
         return backgroundItem;
       } else {
@@ -86,11 +87,18 @@ const IndexPage: React.FC<PageProps> = () => {
     setItems(updatedItems);
   }, [backgroundItem, backgroundSlots, backgroundItemName, inventoryRows]);
 
+  const [editingSlot, setEditingSlot] = useState(-1);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+
   return (
     <>
       <GlobalStylesComponent />
-      {/* <ConfigModal />
-      <OverlayBackground /> */}
+      {editModalOpen && (
+        <>
+          <ConfigModal />
+          <OverlayBackground />
+        </>
+      )}
       <main>
         <PageStyles>
           <Header title="SkiesGUI Editor" />
@@ -98,12 +106,16 @@ const IndexPage: React.FC<PageProps> = () => {
             uiName={uiName}
             rows={inventoryRows}
             items={items}
+            editingSlot={editingSlot}
+            editModalOpen={editModalOpen}
             onItemMouseEnter={(e, item) => {
               setHoveredItem({ item, x: e.clientX, y: e.clientY });
             }}
             onItemMouseLeave={() => {
               setHoveredItem({ item: null, x: 0, y: 0 });
             }}
+            setEditingSlot={setEditingSlot}
+            setEditModalOpen={setEditModalOpen}
           />
           <div className="editor">
             <div className="input-container">
@@ -157,16 +169,7 @@ const PageStyles = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem;
-
-  textarea.import-config {
-    margin-top: 1rem;
-    width: 30rem;
-    height: 10rem;
-    border-radius: 0.5rem;
-    font-size: 0.8rem;
-    font-family: Minecraftia;
-  }
+  padding: 0.5rem;
 
   input {
     font-family: Minecraftia;
@@ -174,13 +177,17 @@ const PageStyles = styled.div`
 
   textarea {
     padding: 0.5rem;
+    width: 600px;
+    margin-top: 0.3rem;
+    font-size: 0.8rem;
+    font-family: Minecraftia;
   }
 
   h1 {
     font-family: "Roboto mono", "Courier New", "Courier", "monospace";
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
   }
 
   h2 {
@@ -221,11 +228,10 @@ const PageStyles = styled.div`
       width: 100%;
 
       input {
-        margin-top: 1rem;
-        font-size: 0.8rem;
-        padding: 0.3rem 0.5rem;
+        margin-top: 0.3rem;
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
         width: 500px;
-        // center the input
         margin-left: auto;
         margin-right: auto;
         color: #000;
@@ -234,7 +240,7 @@ const PageStyles = styled.div`
     }
 
     label {
-      font-size: 0.85rem;
+      font-size: 0.7rem;
       font-family: Minecraftia;
     }
   }
