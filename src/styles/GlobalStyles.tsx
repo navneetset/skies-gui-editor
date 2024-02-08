@@ -15,7 +15,7 @@ const GlobalStylesComponent = () => {
   font-size: 1.5rem;
   height: 100%;
   min-height: 100vh;
-  background-color: #606060;
+  background-color: #3d3d3d;
   color: #e9e9e9;
   }
 `;
