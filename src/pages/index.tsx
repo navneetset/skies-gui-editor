@@ -84,7 +84,7 @@ const IndexPage: React.FC<PageProps> = () => {
     });
 
     setItems(updatedItems);
-  }, [backgroundItem, backgroundSlots, backgroundItemName]);
+  }, [backgroundItem, backgroundSlots, backgroundItemName, inventoryRows]);
 
   return (
     <>
