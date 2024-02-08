@@ -22,7 +22,7 @@ const GlobalStyle = createGlobalStyle`
   font-size: 1.5rem;
   height: 100%;
   min-height: 100vh;
-  background-color: #2e2e2e;
+  background-color: #606060;
   color: #e9e9e9;
   }
 `;
@@ -73,7 +73,6 @@ const IndexPage: React.FC<PageProps> = () => {
             }}
           />
           <div className="editor">
-            <h2>Editor</h2>
             <div className="input-container">
               <label>UI Name</label>
               <input
@@ -191,6 +190,7 @@ const PageStyles = styled.div`
         margin-left: auto;
         margin-right: auto;
         color: #000;
+        border: 1px solid #fff;
       }
     }
 
@@ -208,7 +208,7 @@ const PageStyles = styled.div`
     background: #c6c6c6;
     font-family: Minecraftia;
     font-weight: bold;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
 
