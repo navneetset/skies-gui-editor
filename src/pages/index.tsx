@@ -114,6 +114,7 @@ const IndexPage: React.FC<PageProps> = () => {
     const newConfig: Config = {
       title: uiName,
       size: inventoryRows,
+      alias_commands: aliasCommands,
       items: {
         ...(enableBackground && {
           background: {
@@ -135,6 +136,11 @@ const IndexPage: React.FC<PageProps> = () => {
     }
   }, [config]);
 
+  const [aliasCommands, setAliasCommands] = useState([
+    "example",
+    "ex",
+    "e",
+  ] as string[]);
   const [openActions, setOpenActions] = useState([] as Action[]);
 
   return (
@@ -174,6 +180,19 @@ const IndexPage: React.FC<PageProps> = () => {
               <input
                 value={uiName}
                 onChange={(e) => setUiName(e.target.value)}
+              />
+            </div>
+            <div className="input-container">
+              <label>Alias Commands (Comma Separated)</label>
+              <input
+                type="text"
+                placeholder="example, exp, e"
+                value={aliasCommands.join(",")}
+                onChange={(e) => {
+                  setAliasCommands(
+                    e.target.value.split(",").map((x) => x.trim())
+                  );
+                }}
               />
             </div>
             <div className="input-container inline">
