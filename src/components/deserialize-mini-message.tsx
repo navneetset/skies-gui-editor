@@ -1,4 +1,3 @@
-// deserializeMiniMessage.ts
 import React from "react";
 
 const colorMap: { [key: string]: string } = {

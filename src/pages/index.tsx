@@ -51,7 +51,7 @@ const IndexPage: React.FC<PageProps> = () => {
   });
 
   const [items, setItems] = useState(defaultItems as Item[]);
-  const [uiName, setUiName] = useState("SkiesGUI");
+  const [uiName, setUiName] = useState("<dark_purple>SkiesGUI</dark_purple>");
   const [selectedItem, setSelectedItem] = useState("" as any);
   const [allItems, setAllItems] = useState([] as any);
 
