@@ -9,7 +9,8 @@ import CreatableSelect from "react-select/creatable";
 import BackgroundItems from "../components/background-items";
 import GlobalStylesComponent from "../styles/GlobalStyles";
 import ConfigModal from "../components/config-modal";
-import { Config, exportConfig } from "../resources/export-config";
+import { Action, Config, exportConfig } from "../resources/export-config";
+import OpenAction from "../components/open-action";
 
 const IndexPage: React.FC<PageProps> = () => {
   const [hoveredItem, setHoveredItem] = useState<{
@@ -113,6 +114,15 @@ const IndexPage: React.FC<PageProps> = () => {
     const newConfig: Config = {
       title: uiName,
       size: inventoryRows,
+      items: {
+        ...(enableBackground && {
+          background: {
+            item: backgroundItem.material,
+            slots: backgroundSlots.split(",").map((slot) => parseInt(slot)),
+            name: backgroundItemName,
+          },
+        }),
+      },
     };
 
     setConfig(newConfig);
@@ -124,6 +134,8 @@ const IndexPage: React.FC<PageProps> = () => {
       exportConfig(config);
     }
   }, [config]);
+
+  const [openActions, setOpenActions] = useState([] as Action[]);
 
   return (
     <>
@@ -152,7 +164,9 @@ const IndexPage: React.FC<PageProps> = () => {
             setEditingSlot={setEditingSlot}
             setEditModalOpen={setEditModalOpen}
           />
-          <button onClick={updateConfig}>Export</button>
+          <button className="export-button" onClick={updateConfig}>
+            Export
+          </button>
 
           <div className="editor">
             <div className="input-container">
@@ -183,6 +197,7 @@ const IndexPage: React.FC<PageProps> = () => {
                 }}
               />
             </div>
+            <OpenAction />
             <div className="input-container">
               <label>Background</label>
               <input
@@ -228,6 +243,25 @@ const PageStyles = styled.div`
     margin-top: 0.3rem;
     font-size: 0.8rem;
     font-family: Minecraftia;
+  }
+
+  .export-button {
+    margin-top: 1rem;
+    padding: 0.3rem 0.45rem;
+    border-radius: 5px;
+    border: 1px solid #000;
+    background: #c6c6c6;
+    font-family: Minecraftia;
+    font-weight: bold;
+    font-size: 0.65rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background: #b3b3b3;
+      transform: scale(1.05);
+      translate: translateY(-2px);
+    }
   }
 
   h1 {

@@ -7,17 +7,28 @@ export interface Config {
     items?: { [key: string]: Item };
   }
   
-  interface Actions {
+  export interface Actions {
     [key: string]: Action;
   }
   
-  interface Action {
-    type: string;
-    sound?: string;
-    click?: string;
+  export interface Action {
+    type: ActionType;
+    click?: ClickAction;
     commands?: string[];
     message?: string[];
+    sound?: string;
+    volume?: number;
+    pitch?: number;
+    id?: string;
+    amount?: number;
+    level?: boolean;
+    currency?: string;
+    item?: string;
+    nbt?: NBT;
   }
+
+  type ClickAction = "ANY" | "LEFT_CLICK" | "SHIFT_LEFT_CLICK" | "ANY_LEFT_CLICK" | "RIGHT_CLICK" | "SHIFT_RIGHT_CLICK" | "ANY_RIGHT_CLICK" | "ANY_CLICK" | "ANY_MAIN_CLICK" | "ANY_SHIFT_CLICK" | "MIDDLE_CLICK" | "THROW";
+  type ActionType = "MESSAGE" | "COMMAND_CONSOLE" | "COMMAND_PLAYER" | "BROADCAST" | "PLAYSOUND" | "OPEN_GUI" | "CLOSE_GUI" | "REFRESH_GUI" | "GIVE_XP" | "CURRENCY_DEPOSIT" | "CURRENCY_WITHDRAW" | "CURRENCY_SET" | "GIVE_ITEM" | "TAKE_ITEM"
   
   interface Item {
     item: string;
@@ -32,7 +43,7 @@ export interface Config {
   }
   
   interface NBT {
-    [key: string]: any; // NBT can be quite varied, so you might need to keep it flexible
+    [key: string]: any;
   }
   
   interface ViewRequirements {
