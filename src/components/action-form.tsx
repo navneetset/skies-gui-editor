@@ -358,15 +358,6 @@ const StyledActionForm = styled.div`
       }
     }
 
-    input {
-      width: 65%;
-      font-family: Minecraftia;
-      font-weight: bold;
-      font-size: 0.5rem;
-      border-radius: 5px;
-      border: 1px solid #000;
-      background: #dfdfdf;
-    }
     button {
       width: 25%;
 
