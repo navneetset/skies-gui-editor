@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Action, ActionType } from "../resources/export-config"; // Adjust import path as necessary
 import styled from "styled-components";
+import NBTTooltip from "./nbt-tooltip";
 
 interface ActionFormProps {
   action: Action;
@@ -15,15 +16,23 @@ interface TextInputProps {
   onChange: (value: string) => void;
 }
 
+interface TextAreaInputProps {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onBlur: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+}
+
 const TextInput = ({ value, onChange }: TextInputProps) => (
   <input type="text" value={value} onChange={(e) => onChange(e.target.value)} />
 );
 
-const TextAreaInput = ({ value, onChange }: TextInputProps) => (
+const TextAreaInput = ({ value, onChange, onBlur }: TextAreaInputProps) => (
   <textarea
     style={{ height: "6rem", width: "100%" }}
     value={value}
-    onChange={(e) => onChange(e.target.value)}
+    onChange={(e) => onChange(e)}
+    onBlur={(e) => onBlur(e)}
+    className="nbt-input"
   />
 );
 
@@ -83,13 +92,13 @@ const ActionForm = ({
   const [selectedActionType, setSelectedActionType] = useState(action.type);
   const [localActionId, setLocalActionId] = useState(actionId);
   const [collapsed, setCollapsed] = useState(false);
+  const [localNbt, setLocalNbt] = useState("{}");
 
   useEffect(() => {
     setLocalActionId(actionId);
   }, [actionId]);
 
   const actionFieldsMap = {
-    "": [],
     MESSAGE: ["message"],
     COMMAND_CONSOLE: ["commands"],
     COMMAND_PLAYER: ["commands"],
@@ -146,6 +155,33 @@ const ActionForm = ({
     }
   };
 
+  const [nbtValid, setNbtValid] = useState(true);
+
+  const handleNbtChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    // check if the JSON is valid
+    setLocalNbt(e.target.value);
+
+    try {
+      const parsedNbt = JSON.parse(e.target.value);
+      onChange({ ...action, nbt: parsedNbt });
+      setNbtValid(true);
+    } catch (e) {
+      setNbtValid(false);
+      console.error(e);
+    }
+  };
+
+  const handleNbtBlur = () => {
+    try {
+      const parsedNbt = JSON.parse(localNbt);
+      onChange({ ...action, nbt: parsedNbt });
+      setNbtValid(true);
+    } catch (e) {
+      setNbtValid(false);
+      console.error(e);
+    }
+  };
+
   const handleActionTypeChange = (newType: ActionType) => {
     setSelectedActionType(newType);
     const newAction = initializeActionFields(newType);
@@ -169,8 +205,6 @@ const ActionForm = ({
 
   const renderField = (field: string) => {
     switch (field) {
-      case "":
-        return null;
       case "message":
       case "commands":
         return (
@@ -222,10 +256,36 @@ const ActionForm = ({
         );
       case "nbt":
         return (
-          <TextAreaInput
-            value={JSON.stringify((action[field] as object) || {})}
-            onChange={(val) => handleChange(field, JSON.parse(val))}
-          />
+          <div>
+            <TextAreaInput
+              value={localNbt}
+              onChange={handleNbtChange}
+              onBlur={handleNbtBlur}
+            />
+            {!nbtValid ? (
+              <p
+                style={{
+                  color: "red",
+                  fontSize: "0.6rem",
+                  marginTop: "0.5rem",
+                  textShadow: "1px 1px 0px #000",
+                }}
+              >
+                ❌ Invalid JSON
+              </p>
+            ) : (
+              <p
+                style={{
+                  color: "#97EA36",
+                  fontSize: "0.6rem",
+                  marginTop: "0.5rem",
+                  textShadow: "1px 1px 0px #000",
+                }}
+              >
+                ✅ Valid JSON
+              </p>
+            )}
+          </div>
         );
 
       default:
@@ -271,6 +331,7 @@ const ActionForm = ({
             <label>
               {capitalizeFirstLetter(field)}{" "}
               {(field === "volume" || field == "pitch") && "[0-1.0]"}
+              {field === "nbt" && <NBTTooltip />}
             </label>
             {renderField(field)}
           </div>
@@ -387,5 +448,13 @@ const StyledActionForm = styled.div`
         background: #af4545;
       }
     }
+  }
+
+  .nbt-input {
+    margin-top: 0.3rem;
+    font-size: 0.65rem;
+    border-radius: 5px;
+    border: 1px solid #000;
+    background: #dfdfdf;
   }
 `;

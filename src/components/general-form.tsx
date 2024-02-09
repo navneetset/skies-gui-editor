@@ -32,7 +32,7 @@ const GeneralForm = ({
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <GeneralFormStyles collapsed={collapsed}>
+    <GeneralFormStyles $collapsed={collapsed}>
       <label>General Settings</label>
       {!collapsed && (
         <>
@@ -100,7 +100,7 @@ const GeneralForm = ({
 
 export default GeneralForm;
 
-const GeneralFormStyles = styled.div<{ collapsed: boolean }>`
+const GeneralFormStyles = styled.div<{ $collapsed: boolean }>`
   display: flex;
   flex-direction: column;
   margin-bottom: 0.7rem;
@@ -111,7 +111,7 @@ const GeneralFormStyles = styled.div<{ collapsed: boolean }>`
   margin-top: 0.5rem;
   max-width: 400px;
   box-shadow: 5px 5px 0px #555555, inset 2px 2px 0px #fefefe;
-  height: ${(props) => (props.collapsed ? "100px" : "435px")};
+  height: ${(props) => (props.$collapsed ? "100px" : "435px")};
   width: 400px;
   transition: all 0.4s ease-in-out;
 

@@ -197,6 +197,10 @@ const IndexPage: React.FC<PageProps> = () => {
             setEditModalOpen={setEditModalOpen}
           />
 
+          <button className="add-item-button">
+            <span>Add Item</span>
+          </button>
+
           <button className="export-button" onClick={updateConfig}>
             Export Config
           </button>
@@ -263,6 +267,27 @@ const PageStyles = styled.div`
     width: 0.75rem;
     height: 0.75rem;
     width: 1.5rem !important;
+  }
+
+  .add-item-button {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.1rem 0.3rem;
+    border-radius: 5px;
+    border: 1px solid #000;
+    background: #54c146;
+    font-family: Minecraftia;
+    font-weight: bold;
+    font-size: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 2px 2px 0px #67925d, inset 1px 1px 0px #fefefe;
+
+    &:hover {
+      background: #3faa37;
+      transform: scale(1.03);
+      translate: translateY(-2px);
+    }
   }
 
   .export-button {
