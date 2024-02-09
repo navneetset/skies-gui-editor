@@ -75,7 +75,6 @@ const BackgroundItemsStyles = styled.div`
 
   textarea {
     padding: 0.5rem;
-    width: 460px;
     margin-top: 0.3rem;
     font-size: 0.65rem;
     font-family: Minecraftia;
