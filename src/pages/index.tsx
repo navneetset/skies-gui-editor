@@ -291,13 +291,16 @@ const PageStyles = styled.div`
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 1.5rem;
+    text-align: center;
   }
 
   h2 {
     font-family: "Roboto mono", "Courier New", "Courier", "monospace";
-    font-size: 1.5rem;
+    font-size: 1rem;
     font-weight: 700;
     line-height: 0;
+    text-align: center;
+    margin-bottom: 1rem;
   }
 
   .item-cards-container {
