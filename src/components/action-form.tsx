@@ -5,6 +5,7 @@ import styled from "styled-components";
 interface ActionFormProps {
   action: Action;
   onChange: (updatedAction: Action) => void;
+  children?: React.ReactNode;
 }
 
 interface TextInputProps {
@@ -66,7 +67,7 @@ const ArrayInput: React.FC<ArrayInputProps> = ({
   </div>
 );
 
-const ActionForm = ({ action, onChange }: ActionFormProps) => {
+const ActionForm = ({ action, onChange, children }: ActionFormProps) => {
   const [selectedActionType, setSelectedActionType] = useState(action.type);
 
   const actionFieldsMap = {
@@ -186,6 +187,7 @@ const ActionForm = ({ action, onChange }: ActionFormProps) => {
           {renderField(field)}
         </div>
       ))}
+      {children}
     </StyledActionForm>
   );
 };
@@ -201,11 +203,15 @@ const StyledActionForm = styled.div`
   padding: 0.5rem;
   border-radius: 5px;
   margin-top: 0.5rem;
+  max-width: 600px;
+  box-shadow: 5px 5px 0px #555555, inset 2px 2px 0px #fefefe;
 
   .form-item {
     display: flex;
     flex-direction: column;
     margin-bottom: 0.3rem;
+    width: 550px;
+    max-width: 550px;
 
     select {
       font-family: inherit;

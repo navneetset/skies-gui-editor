@@ -22,6 +22,11 @@ const OpenAction = ({ actions, setActions }: OpenActionProps) => {
     setActions([...actions, newAction]);
   };
 
+  const handleRemoveAction = (index: number) => {
+    const newActions = actions.filter((_, i) => i !== index);
+    setActions(newActions);
+  };
+
   return (
     <OpenActionStyles>
       <div className="input-container">
@@ -34,7 +39,13 @@ const OpenAction = ({ actions, setActions }: OpenActionProps) => {
               onChange={(updatedAction) =>
                 handleActionChange(index, updatedAction)
               }
-            />
+            >
+              <div className="remove-action">
+                <button onClick={() => handleRemoveAction(index)}>
+                  Remove
+                </button>
+              </div>
+            </ActionForm>
           ))}
           <div className="add-action">
             <button onClick={handleAddAction}>Add Action</button>
