@@ -1,14 +1,73 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import { Action, Actions } from "../resources/export-config";
+import ActionForm from "./action-form";
 
-const CloseAction = () => {
+interface CloseActionProps {
+  actions: Actions;
+  setActions: (actions: Actions) => void;
+}
+
+const CloseAction = ({ actions, setActions }: CloseActionProps) => {
+  const [actionIdCounter, setActionIdCounter] = useState(0);
+
+  const handleActionChange = (actionId: string, updatedAction: Action) => {
+    setActions({ ...actions, [actionId]: updatedAction });
+  };
+
+  const handleAddAction = () => {
+    const newActionId = `action_${actionIdCounter}`; // Create a unique ID
+    setActionIdCounter(actionIdCounter + 1); // Increment the counter
+
+    const newAction: Action = {
+      type: "MESSAGE", // Default type for new action
+      message: [], // Default values for the new action
+    };
+    setActions({ ...actions, [newActionId]: newAction });
+  };
+
+  const handleRemoveAction = (actionId: string) => {
+    const newActions = { ...actions };
+    delete newActions[actionId];
+    setActions(newActions);
+  };
+
+  const handleActionIdChange = (oldId: string, newId: string) => {
+    const updatedActions = { ...actions };
+    if (updatedActions[newId]) {
+      alert(`Action with ID '${newId}' already exists.`);
+      return;
+    }
+
+    updatedActions[newId] = updatedActions[oldId];
+    delete updatedActions[oldId];
+    setActions(updatedActions);
+  };
+
   return (
     <CloseActionStyles>
       <div className="input-container">
-        <label>Close Actions</label>
+        <label>Open Actions</label>
         <div className="actions">
+          {Object.entries(actions).map(([actionId, action]) => (
+            <ActionForm
+              key={actionId}
+              actionId={actionId}
+              action={action}
+              onChange={(updatedAction) =>
+                handleActionChange(actionId, updatedAction)
+              }
+              onIdChange={(newId: string) =>
+                handleActionIdChange(actionId, newId)
+              }
+            >
+              <button onClick={() => handleRemoveAction(actionId)}>
+                Remove
+              </button>
+            </ActionForm>
+          ))}
           <div className="add-action">
-            <button>Add Action</button>
+            <button onClick={handleAddAction}>Add Action</button>
           </div>
         </div>
       </div>

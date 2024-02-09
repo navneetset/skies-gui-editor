@@ -122,6 +122,7 @@ const IndexPage: React.FC<PageProps> = () => {
       size: inventoryRows,
       alias_commands: aliasCommands,
       open_actions: openActions,
+      close_actions: closeActions,
       items: {
         ...(enableBackground && {
           background: {
@@ -152,6 +153,15 @@ const IndexPage: React.FC<PageProps> = () => {
     play_sound: {
       type: "PLAYSOUND",
       sound: "cobblemon:pc.on",
+      volume: 1.0,
+      pitch: 1.0,
+    },
+  } as Actions);
+
+  const [closeActions, setCloseActions] = useState({
+    play_sound: {
+      type: "PLAYSOUND",
+      sound: "cobblemon:pc.off",
       volume: 1.0,
       pitch: 1.0,
     },
@@ -231,7 +241,7 @@ const IndexPage: React.FC<PageProps> = () => {
               />
             </div>
             <OpenAction actions={openActions} setActions={setOpenActions} />
-            <CloseAction />
+            <CloseAction actions={closeActions} setActions={setCloseActions} />
             <div className="input-container">
               <label>Background</label>
               <input
