@@ -11,6 +11,7 @@ import GlobalStylesComponent from "../styles/GlobalStyles";
 import ConfigModal from "../components/config-modal";
 import { Action, Config, exportConfig } from "../resources/export-config";
 import OpenAction from "../components/open-action";
+import CloseAction from "../components/close-action";
 
 const IndexPage: React.FC<PageProps> = () => {
   const [hoveredItem, setHoveredItem] = useState<{
@@ -141,7 +142,23 @@ const IndexPage: React.FC<PageProps> = () => {
     "ex",
     "e",
   ] as string[]);
-  const [openActions, setOpenActions] = useState([] as Action[]);
+  const [openActions, setOpenActions] = useState([
+    {
+      type: "PLAYSOUND",
+      sound: "cobblemon:pc.on",
+      volume: 1.0,
+      pitch: 1.0,
+    },
+  ] as Action[]);
+
+  const [closeActions, setCloseActions] = useState([
+    {
+      type: "PLAYSOUND",
+      sound: "cobblemon:pc.off",
+      volume: 1.0,
+      pitch: 1.0,
+    },
+  ] as Action[]);
 
   return (
     <>
@@ -186,7 +203,7 @@ const IndexPage: React.FC<PageProps> = () => {
               <label>Alias Commands (Comma Separated)</label>
               <input
                 type="text"
-                placeholder="example, exp, e"
+                placeholder="example,exp,e"
                 value={aliasCommands.join(",")}
                 onChange={(e) => {
                   setAliasCommands(
@@ -216,7 +233,8 @@ const IndexPage: React.FC<PageProps> = () => {
                 }}
               />
             </div>
-            <OpenAction />
+            <OpenAction actions={openActions} setActions={setOpenActions} />
+            <CloseAction />
             <div className="input-container">
               <label>Background</label>
               <input

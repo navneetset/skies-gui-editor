@@ -1,14 +1,43 @@
 import React from "react";
 import styled from "styled-components";
+import { Action } from "../resources/export-config";
+import ActionForm from "./action-form";
 
-const OpenAction = () => {
+interface OpenActionProps {
+  actions: Action[];
+  setActions: (actions: Action[]) => void;
+}
+
+const OpenAction = ({ actions, setActions }: OpenActionProps) => {
+  const handleActionChange = (index: number, updatedAction: Action) => {
+    const newActions = [...actions];
+    newActions[index] = updatedAction;
+    setActions(newActions);
+  };
+
+  const handleAddAction = () => {
+    const newAction: Action = {
+      type: "",
+    };
+    setActions([...actions, newAction]);
+  };
+
   return (
     <OpenActionStyles>
       <div className="input-container">
         <label>Open Actions</label>
         <div className="actions">
+          {actions.map((action, index) => (
+            <ActionForm
+              key={index}
+              action={action}
+              onChange={(updatedAction) =>
+                handleActionChange(index, updatedAction)
+              }
+            />
+          ))}
           <div className="add-action">
-            <button>Add Action</button>
+            <button onClick={handleAddAction}>Add Action</button>
           </div>
         </div>
       </div>
