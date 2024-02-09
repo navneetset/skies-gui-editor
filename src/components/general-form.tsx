@@ -61,7 +61,9 @@ const GeneralForm = ({
             />
           </div>
           <div className="input-container inline">
-            <label>Rows</label>
+            <label style={{ marginTop: "auto", marginBottom: "auto" }}>
+              Rows
+            </label>
             <CreatableSelect
               className="row-input"
               options={[

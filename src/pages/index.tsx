@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { Item } from "../interface/item";
 import Header from "../components/header";
 import InventoryGrid from "../components/inventory-grid";
-import CreatableSelect from "react-select/creatable";
 import BackgroundItems from "../components/background-items";
 import GlobalStylesComponent from "../styles/GlobalStyles";
 import ConfigModal from "../components/config-modal";
@@ -217,7 +216,7 @@ const IndexPage: React.FC<PageProps> = () => {
               setAliasCommands={setAliasCommands}
             />
             <div className="input-container">
-              <label>
+              <label style={{ textAlign: "center" }}>
                 Background
                 <input
                   type="checkbox"
@@ -326,7 +325,7 @@ const PageStyles = styled.div`
     .input-container {
       display: flex;
       flex-direction: column;
-      align-items: center;
+
       margin-top: 1rem;
 
       &:first-child {
@@ -336,9 +335,7 @@ const PageStyles = styled.div`
       input {
         font-size: 0.6rem;
         padding: 0.2rem 0.4rem;
-        width: 350px;
-        margin-left: auto;
-        margin-right: auto;
+
         margin-top: 0.25rem;
         background: #f6f6f6;
         color: #000;

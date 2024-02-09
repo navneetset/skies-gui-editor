@@ -19,6 +19,14 @@ const TextInput = ({ value, onChange }: TextInputProps) => (
   <input type="text" value={value} onChange={(e) => onChange(e.target.value)} />
 );
 
+const TextAreaInput = ({ value, onChange }: TextInputProps) => (
+  <textarea
+    style={{ height: "6rem", width: "100%" }}
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+  />
+);
+
 interface NumberInputProps {
   value: number;
   onChange: (value: number) => void;
@@ -95,7 +103,7 @@ const ActionForm = ({
     CURRENCY_WITHDRAW: ["currency", "amount"],
     CURRENCY_SET: ["currency", "amount"],
     GIVE_ITEM: ["item", "amount", "nbt"],
-    TAKE_ITEM: ["item", "amount", "nbt"],
+    TAKE_ITEM: ["item", "amount", "nbt", "strict"],
   };
 
   const initializeActionFields = (type: ActionType): Action => {
@@ -203,6 +211,20 @@ const ActionForm = ({
           <TextInput
             value={(action[field] as string) || ""}
             onChange={(val) => handleChange(field, val)}
+          />
+        );
+      case "strict":
+        return (
+          <CheckboxInput
+            checked={(action[field] as boolean) || false}
+            onChange={(val) => handleChange(field, val)}
+          />
+        );
+      case "nbt":
+        return (
+          <TextAreaInput
+            value={JSON.stringify((action[field] as object) || {})}
+            onChange={(val) => handleChange(field, JSON.parse(val))}
           />
         );
 

@@ -60,9 +60,7 @@ const BackgroundItemsStyles = styled.div`
   padding: 0.5rem;
   border-radius: 5px;
   margin-top: 0.5rem;
-  max-width: 500px;
   box-shadow: 5px 5px 0px #555555, inset 2px 2px 0px #fefefe;
-  width: 500px;
   animation: fadeIn 0.5s ease;
   transition: all 0.4s ease-in-out;
 

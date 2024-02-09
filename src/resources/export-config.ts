@@ -25,6 +25,7 @@ export interface Config {
     currency?: string;
     item?: string;
     nbt?: NBT;
+    strict?: boolean;
   }
 
   export type ClickType = "ANY" | "LEFT_CLICK" | "SHIFT_LEFT_CLICK" | "ANY_LEFT_CLICK" | "RIGHT_CLICK" | "SHIFT_RIGHT_CLICK" | "ANY_RIGHT_CLICK" | "ANY_CLICK" | "ANY_MAIN_CLICK" | "ANY_SHIFT_CLICK" | "MIDDLE_CLICK" | "THROW";
