@@ -17,6 +17,7 @@ import {
 } from "../resources/export-config";
 import OpenAction from "../components/open-action";
 import CloseAction from "../components/close-action";
+import GeneralForm from "../components/general-form";
 
 const IndexPage: React.FC<PageProps> = () => {
   const [hoveredItem, setHoveredItem] = useState<{
@@ -196,68 +197,34 @@ const IndexPage: React.FC<PageProps> = () => {
             setEditingSlot={setEditingSlot}
             setEditModalOpen={setEditModalOpen}
           />
+
           <button className="export-button" onClick={updateConfig}>
-            Export
+            Export Config
           </button>
 
           <div className="editor">
+            <GeneralForm
+              inventoryRows={inventoryRows}
+              setInventoryRows={setInventoryRows}
+              inventoryRowMap={inventoryRowMap}
+              items={items}
+              setItems={setItems}
+              fileName={fileName}
+              setFileName={setFileName}
+              uiName={uiName}
+              setUiName={setUiName}
+              aliasCommands={aliasCommands}
+              setAliasCommands={setAliasCommands}
+            />
             <div className="input-container">
-              <label>File Name</label>
-              <input
-                value={fileName}
-                onChange={(e) => setFileName(e.target.value)}
-              />
-            </div>
-            <div className="input-container">
-              <label>UI Name</label>
-              <input
-                value={uiName}
-                onChange={(e) => setUiName(e.target.value)}
-              />
-            </div>
-            <div className="input-container">
-              <label>Alias Commands (Comma Separated)</label>
-              <input
-                type="text"
-                placeholder="example,exp,e"
-                value={aliasCommands.join(",")}
-                onChange={(e) => {
-                  setAliasCommands(
-                    e.target.value.split(",").map((x) => x.trim())
-                  );
-                }}
-              />
-            </div>
-            <div className="input-container inline">
-              <label>Inventory Rows</label>
-              <CreatableSelect
-                className="row-input"
-                options={[
-                  { value: 1, label: 1 },
-                  { value: 2, label: 2 },
-                  { value: 3, label: 3 },
-                  { value: 4, label: 4 },
-                  { value: 5, label: 5 },
-                  { value: 6, label: 6 },
-                ]}
-                value={{ value: inventoryRows, label: inventoryRows }}
-                onChange={(option) => {
-                  setInventoryRows(option?.value as number);
-                  setItems(
-                    Array(inventoryRowMap[option?.value as number]).fill({})
-                  );
-                }}
-              />
-            </div>
-            <OpenAction actions={openActions} setActions={setOpenActions} />
-            <CloseAction actions={closeActions} setActions={setCloseActions} />
-            <div className="input-container">
-              <label>Background</label>
-              <input
-                type="checkbox"
-                checked={enableBackground}
-                onChange={(e) => setEnableBackground(e.target.checked)}
-              />
+              <label>
+                Background
+                <input
+                  type="checkbox"
+                  checked={enableBackground}
+                  onChange={(e) => setEnableBackground(e.target.checked)}
+                />
+              </label>
               {enableBackground && (
                 <BackgroundItems
                   backgroundSlots={backgroundSlots}
@@ -269,6 +236,9 @@ const IndexPage: React.FC<PageProps> = () => {
                 />
               )}
             </div>
+
+            <OpenAction actions={openActions} setActions={setOpenActions} />
+            <CloseAction actions={closeActions} setActions={setCloseActions} />
           </div>
         </PageStyles>
       </main>
@@ -290,16 +260,15 @@ const PageStyles = styled.div`
     font-family: Minecraftia;
   }
 
-  textarea {
-    padding: 0.5rem;
-    width: 600px;
-    margin-top: 0.3rem;
-    font-size: 0.8rem;
-    font-family: Minecraftia;
+  input[type="checkbox"] {
+    width: 0.75rem;
+    height: 0.75rem;
+    width: 1.5rem !important;
   }
 
   .export-button {
     margin-top: 1rem;
+    margin-bottom: 1rem;
     padding: 0.3rem 0.45rem;
     border-radius: 5px;
     border: 1px solid #000;
@@ -309,6 +278,7 @@ const PageStyles = styled.div`
     font-size: 0.65rem;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+    box-shadow: 2px 2px 0px #757575, inset 1px 1px 0px #fefefe;
 
     &:hover {
       background: #b3b3b3;
@@ -341,8 +311,7 @@ const PageStyles = styled.div`
   }
 
   .row-input {
-    margin-top: 0.5rem;
-    margin-left: auto;
+    margin-top: 0.25rem;
     margin-right: auto;
     font-size: 0.6rem;
     color: #000;
@@ -359,29 +328,40 @@ const PageStyles = styled.div`
       flex-direction: column;
       align-items: center;
       margin-top: 1rem;
-      width: 100%;
 
-      &.inline {
-        flex-direction: row;
-        justify-content: space-between;
-        width: 250px;
+      &:first-child {
+        margin-top: 0;
       }
 
       input {
-        margin-top: 0.3rem;
-        font-size: 0.7rem;
+        font-size: 0.6rem;
         padding: 0.2rem 0.4rem;
-        width: 500px;
+        width: 350px;
         margin-left: auto;
         margin-right: auto;
+        margin-top: 0.25rem;
+        background: #f6f6f6;
         color: #000;
         border: 1px solid #fff;
+        border-radius: 5px;
+      }
+
+      &.inline {
+        flex-direction: row;
+
+        label {
+          margin-right: 0.5rem;
+        }
       }
     }
 
     label {
       font-size: 0.7rem;
       font-family: Minecraftia;
+    }
+
+    &:last-child {
+      margin-bottom: 4rem;
     }
   }
 
@@ -403,38 +383,16 @@ const PageStyles = styled.div`
       translate: translateY(-2px);
     }
   }
-`;
 
-const ChestInventory = styled.div<{
-  rows: number;
-}>`
-  display: grid;
-  grid-template-columns: repeat(9, 1fr);
-  grid-template-rows: repeat(${(props) => props.rows}, 1fr);
-  width: auto;
-  height: auto;
-  background: #c6c6c6;
-  border-radius: 3px;
-  border: 2px solid #000;
-  box-shadow: 5px 5px 0px #555555, inset 2px 2px 0px #fefefe;
-  padding-top: 5px;
-  padding-left: 5px;
-  margin-bottom: 10px;
-
-  .inventory-header {
-    grid-column: 1 / -1; // Span the entire width of the grid
-    background: #c6c6c6;
-    text-align: left;
-    margin-bottom: 2px;
+  button.collapse-button {
+    background: #6e6e6e;
+    color: #fff;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.35rem;
     font-family: Minecraftia;
-    font-weight: bold;
-    font-size: 22px;
-    padding: 5px 0;
-    color: #3c3838;
-    text-shadow: 1px 1px 0px #fefefe;
 
-    span {
-      margin-left: 5px;
+    &:hover {
+      background: #8e8e8e;
     }
   }
 `;

@@ -78,8 +78,12 @@ const ItemSelection = ({
 export default ItemSelection;
 
 const SelectStyles = styled(CreatableSelect)`
-  font-size: 0.75rem;
-  width: 600px;
+  font-size: 0.6rem;
+  width: 460px;
   color: #000;
   margin-top: 10px;
+
+  .icon-minecraft {
+    scale: 0.9;
+  }
 `;

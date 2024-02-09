@@ -47,7 +47,7 @@ const CloseAction = ({ actions, setActions }: CloseActionProps) => {
   return (
     <CloseActionStyles>
       <div className="input-container">
-        <label>Open Actions</label>
+        <label>Close Actions</label>
         <div className="actions">
           {Object.entries(actions).map(([actionId, action]) => (
             <ActionForm
@@ -61,14 +61,17 @@ const CloseAction = ({ actions, setActions }: CloseActionProps) => {
                 handleActionIdChange(actionId, newId)
               }
             >
-              <button onClick={() => handleRemoveAction(actionId)}>
+              <button
+                className="remove-button"
+                onClick={() => handleRemoveAction(actionId)}
+              >
                 Remove
               </button>
             </ActionForm>
           ))}
-          <div className="add-action">
-            <button onClick={handleAddAction}>Add Action</button>
-          </div>
+        </div>
+        <div className="add-action button-container">
+          <button onClick={handleAddAction}>Add Action</button>
         </div>
       </div>
     </CloseActionStyles>
@@ -83,35 +86,66 @@ const CloseActionStyles = styled.div`
     flex-direction: column;
     margin-bottom: 1rem;
     font-family: inherit;
-    label {
-      margin-bottom: 0.1rem;
-    }
+
     .actions {
       display: flex;
       flex-direction: column;
-      .add-action {
-        button {
-          margin-top: 0.5rem;
-        }
-      }
     }
 
-    button {
-      margin-top: 1rem;
-      padding: 0.2rem 0.35rem;
-      border-radius: 5px;
-      border: 1px solid #000;
-      background: #c6c6c6;
-      font-family: Minecraftia;
-      font-weight: bold;
-      font-size: 0.65rem;
-      cursor: pointer;
-      transition: all 0.2s ease-in-out;
+    .add-action {
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
 
-      &:hover {
-        background: #b3b3b3;
-        transform: scale(1.05);
-        translate: translateY(-1.5px);
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+
+      button {
+        padding: 0.2rem 0.35rem;
+        border-radius: 5px;
+        border: 1px solid #000;
+        background: #c6c6c6;
+        font-family: Minecraftia;
+        font-weight: bold;
+        font-size: 0.65rem;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        box-shadow: 2px 2px 0px #555555, inset 1px 1px 0px #fefefe;
+
+        &:hover {
+          background: #b3b3b3;
+          transform: scale(1.05);
+          translate: translateY(-1.5px);
+        }
+      }
+
+      .remove-button {
+        background: #af4545;
+        color: #fff;
+        margin-left: 0.5rem;
+
+        &:hover {
+          background: #f35555;
+        }
+      }
+
+      .collapse-button {
+        background: #6e6e6e;
+        color: #fff;
+
+        &:hover {
+          background: #8e8e8e;
+        }
+      }
+
+      .expand-button {
+        background: #686e97;
+        color: #fff;
+
+        &:hover {
+          background: #8e8eaf;
+        }
       }
     }
   }

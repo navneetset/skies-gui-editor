@@ -15,7 +15,7 @@ interface TextInputProps {
   onChange: (value: string) => void;
 }
 
-const TextInput: React.FC<TextInputProps> = ({ value, onChange }) => (
+const TextInput = ({ value, onChange }: TextInputProps) => (
   <input type="text" value={value} onChange={(e) => onChange(e.target.value)} />
 );
 
@@ -24,7 +24,7 @@ interface NumberInputProps {
   onChange: (value: number) => void;
 }
 
-const NumberInput: React.FC<NumberInputProps> = ({ value, onChange }) => (
+const NumberInput = ({ value, onChange }: NumberInputProps) => (
   <input
     type="number"
     value={value}
@@ -37,7 +37,7 @@ interface CheckboxInputProps {
   onChange: (checked: boolean) => void;
 }
 
-const CheckboxInput: React.FC<CheckboxInputProps> = ({ checked, onChange }) => (
+const CheckboxInput = ({ checked, onChange }: CheckboxInputProps) => (
   <input
     type="checkbox"
     checked={checked}
@@ -51,14 +51,10 @@ interface ArrayInputProps {
   placeholder: string;
 }
 
-const ArrayInput: React.FC<ArrayInputProps> = ({
-  values,
-  onChange,
-  placeholder,
-}) => (
+const ArrayInput = ({ values, onChange, placeholder }: ArrayInputProps) => (
   <div>
     {values.map((value, index) => (
-      <div key={index}>
+      <div className="array-input" key={index}>
         <TextInput value={value} onChange={(val) => onChange(index, val)} />
         <button onClick={() => onChange(index, null)}>Remove</button>
       </div>
@@ -78,6 +74,7 @@ const ActionForm = ({
 }: ActionFormProps) => {
   const [selectedActionType, setSelectedActionType] = useState(action.type);
   const [localActionId, setLocalActionId] = useState(actionId);
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     setLocalActionId(actionId);
@@ -101,6 +98,32 @@ const ActionForm = ({
     TAKE_ITEM: ["item", "amount", "nbt"],
   };
 
+  const initializeActionFields = (type: ActionType): Action => {
+    let newAction = { ...action, type: type };
+
+    // Iterate over all possible fields and reset them if not present in the new type
+    Object.keys(actionFieldsMap).forEach((actionType) => {
+      if (actionType !== type) {
+        // @ts-ignore
+        actionFieldsMap[actionType].forEach((field) => {
+          if (newAction.hasOwnProperty(field)) {
+            // Reset the field based on its type
+            // @ts-ignore
+            if (Array.isArray(newAction[field])) {
+              // @ts-ignore
+              newAction[field] = [];
+            } else {
+              // @ts-ignore
+              newAction[field] = undefined;
+            }
+          }
+        });
+      }
+    });
+
+    return newAction;
+  };
+
   const handleChange = (field: string, value: any) => {
     onChange({ ...action, [field]: value });
   };
@@ -117,7 +140,8 @@ const ActionForm = ({
 
   const handleActionTypeChange = (newType: ActionType) => {
     setSelectedActionType(newType);
-    onChange({ ...action, type: newType });
+    const newAction = initializeActionFields(newType);
+    onChange(newAction);
   };
 
   const handleArrayChange = (
@@ -187,6 +211,11 @@ const ActionForm = ({
     }
   };
 
+  const capitalizeFirstLetter = (str: string) => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   return (
     <StyledActionForm>
       <div className="form-item">
@@ -214,13 +243,26 @@ const ActionForm = ({
       </div>
 
       {/** @ts-ignore */}
-      {actionFieldsMap[selectedActionType]?.map((field) => (
-        <div key={field} className="form-item">
-          <label>{field}</label>
-          {renderField(field)}
-        </div>
-      ))}
-      {children}
+      {!collapsed &&
+        actionFieldsMap[selectedActionType]?.map((field) => (
+          <div key={field} className="form-item hidden">
+            <label>
+              {capitalizeFirstLetter(field)}{" "}
+              {(field === "volume" || field == "pitch") && "[0-1.0]"}
+            </label>
+            {renderField(field)}
+          </div>
+        ))}
+
+      <div className="button-container">
+        <button
+          className={collapsed ? "expand-button" : "collapse-button"}
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          {collapsed ? "Expand" : "Collapse"}
+        </button>
+        {children}
+      </div>
     </StyledActionForm>
   );
 };
@@ -236,25 +278,101 @@ const StyledActionForm = styled.div`
   padding: 0.5rem;
   border-radius: 5px;
   margin-top: 0.5rem;
-  max-width: 600px;
+  max-width: 400px;
   box-shadow: 5px 5px 0px #555555, inset 2px 2px 0px #fefefe;
+  animation: expand 0.4s ease;
+
+  @keyframes expand {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  button {
+    padding: 0.2rem 0.35rem;
+    border-radius: 5px;
+    margin-top: 0.5rem;
+    font-family: Minecraftia;
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+      background: #c6c6c6;
+      scale: 1.025;
+    }
+  }
 
   .form-item {
     display: flex;
     flex-direction: column;
     margin-bottom: 0.5rem;
-    width: 550px;
-    max-width: 550px;
+    width: 370px;
+    max-width: 370px;
 
     select {
       font-family: inherit;
       font-size: 0.65rem;
       margin-bottom: 0.5rem;
+      border-radius: 5px;
+      margin-top: 0.2rem;
+      padding: 0.2rem;
+      width: 65%;
     }
 
     label {
       font-size: 0.65rem;
       margin-bottom: 0.1rem;
+    }
+
+    input {
+      border-radius: 5px;
+      border: 1px solid #000;
+      background: #dfdfdf;
+      font-family: Minecraftia;
+      font-weight: bold;
+      font-size: 0.5rem;
+    }
+  }
+
+  .hidden {
+    animation: expand 0.4s ease;
+  }
+
+  .array-input {
+    margin-bottom: 0.5rem;
+    animation: expand 0.4s ease;
+
+    @keyframes expand {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    input {
+      width: 65%;
+      font-family: Minecraftia;
+      font-weight: bold;
+      font-size: 0.5rem;
+      border-radius: 5px;
+      border: 1px solid #000;
+      background: #dfdfdf;
+    }
+    button {
+      width: 25%;
+
+      &:hover {
+        background: #af4545;
+      }
     }
   }
 `;
