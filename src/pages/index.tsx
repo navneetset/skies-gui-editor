@@ -301,6 +301,10 @@ const PageStyles = styled.div`
     line-height: 0;
     text-align: center;
     margin-bottom: 1rem;
+
+    @media (max-width: 768px) {
+      font-size: 0.8rem;
+    }
   }
 
   .item-cards-container {
