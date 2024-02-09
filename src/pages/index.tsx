@@ -298,7 +298,7 @@ const PageStyles = styled.div`
     font-family: "Roboto mono", "Courier New", "Courier", "monospace";
     font-size: 1rem;
     font-weight: 700;
-    line-height: 0;
+    line-height: 0.5;
     text-align: center;
     margin-bottom: 1rem;
 
