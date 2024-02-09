@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Action, ActionType } from "../resources/export-config"; // Adjust import path as necessary
 import styled from "styled-components";
 
 interface ActionFormProps {
   action: Action;
+  actionId: string;
+  onIdChange: (newId: string) => void;
   onChange: (updatedAction: Action) => void;
   children?: React.ReactNode;
 }
@@ -67,8 +69,19 @@ const ArrayInput: React.FC<ArrayInputProps> = ({
   </div>
 );
 
-const ActionForm = ({ action, onChange, children }: ActionFormProps) => {
+const ActionForm = ({
+  action,
+  actionId,
+  onIdChange,
+  onChange,
+  children,
+}: ActionFormProps) => {
   const [selectedActionType, setSelectedActionType] = useState(action.type);
+  const [localActionId, setLocalActionId] = useState(actionId);
+
+  useEffect(() => {
+    setLocalActionId(actionId);
+  }, [actionId]);
 
   const actionFieldsMap = {
     "": [],
@@ -90,6 +103,16 @@ const ActionForm = ({ action, onChange, children }: ActionFormProps) => {
 
   const handleChange = (field: string, value: any) => {
     onChange({ ...action, [field]: value });
+  };
+
+  const handleIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocalActionId(e.target.value);
+  };
+
+  const handleIdBlur = () => {
+    if (localActionId !== actionId) {
+      onIdChange(localActionId);
+    }
   };
 
   const handleActionTypeChange = (newType: ActionType) => {
@@ -180,6 +203,16 @@ const ActionForm = ({ action, onChange, children }: ActionFormProps) => {
         </select>
       </div>
 
+      <div className="form-item">
+        <label>Action ID</label>
+        <input
+          type="text"
+          value={localActionId}
+          onChange={handleIdChange}
+          onBlur={handleIdBlur}
+        />
+      </div>
+
       {/** @ts-ignore */}
       {actionFieldsMap[selectedActionType]?.map((field) => (
         <div key={field} className="form-item">
@@ -209,7 +242,7 @@ const StyledActionForm = styled.div`
   .form-item {
     display: flex;
     flex-direction: column;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.5rem;
     width: 550px;
     max-width: 550px;
 

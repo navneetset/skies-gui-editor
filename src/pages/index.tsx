@@ -9,7 +9,12 @@ import CreatableSelect from "react-select/creatable";
 import BackgroundItems from "../components/background-items";
 import GlobalStylesComponent from "../styles/GlobalStyles";
 import ConfigModal from "../components/config-modal";
-import { Action, Config, exportConfig } from "../resources/export-config";
+import {
+  Action,
+  Actions,
+  Config,
+  exportConfig,
+} from "../resources/export-config";
 import OpenAction from "../components/open-action";
 import CloseAction from "../components/close-action";
 
@@ -116,6 +121,7 @@ const IndexPage: React.FC<PageProps> = () => {
       title: uiName,
       size: inventoryRows,
       alias_commands: aliasCommands,
+      open_actions: openActions,
       items: {
         ...(enableBackground && {
           background: {
@@ -142,23 +148,14 @@ const IndexPage: React.FC<PageProps> = () => {
     "ex",
     "e",
   ] as string[]);
-  const [openActions, setOpenActions] = useState([
-    {
+  const [openActions, setOpenActions] = useState({
+    play_sound: {
       type: "PLAYSOUND",
       sound: "cobblemon:pc.on",
       volume: 1.0,
       pitch: 1.0,
     },
-  ] as Action[]);
-
-  const [closeActions, setCloseActions] = useState([
-    {
-      type: "PLAYSOUND",
-      sound: "cobblemon:pc.off",
-      volume: 1.0,
-      pitch: 1.0,
-    },
-  ] as Action[]);
+  } as Actions);
 
   return (
     <>

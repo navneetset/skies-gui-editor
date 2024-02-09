@@ -1,30 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { Action } from "../resources/export-config";
+import { Actions, Action } from "../resources/export-config";
 import ActionForm from "./action-form";
 
 interface OpenActionProps {
-  actions: Action[];
-  setActions: (actions: Action[]) => void;
+  actions: Actions;
+  setActions: (actions: Actions) => void;
 }
 
 const OpenAction = ({ actions, setActions }: OpenActionProps) => {
-  const handleActionChange = (index: number, updatedAction: Action) => {
-    const newActions = [...actions];
-    newActions[index] = updatedAction;
-    setActions(newActions);
+  const [actionIdCounter, setActionIdCounter] = useState(0);
+
+  const handleActionChange = (actionId: string, updatedAction: Action) => {
+    setActions({ ...actions, [actionId]: updatedAction });
   };
 
   const handleAddAction = () => {
+    const newActionId = `action_${actionIdCounter}`; // Create a unique ID
+    setActionIdCounter(actionIdCounter + 1); // Increment the counter
+
     const newAction: Action = {
-      type: "",
+      type: "MESSAGE", // Default type for new action
+      message: [], // Default values for the new action
     };
-    setActions([...actions, newAction]);
+    setActions({ ...actions, [newActionId]: newAction });
   };
 
-  const handleRemoveAction = (index: number) => {
-    const newActions = actions.filter((_, i) => i !== index);
+  const handleRemoveAction = (actionId: string) => {
+    const newActions = { ...actions };
+    delete newActions[actionId];
     setActions(newActions);
+  };
+
+  const handleActionIdChange = (oldId: string, newId: string) => {
+    const updatedActions = { ...actions };
+    if (updatedActions[newId]) {
+      alert(`Action with ID '${newId}' already exists.`);
+      return;
+    }
+
+    updatedActions[newId] = updatedActions[oldId];
+    delete updatedActions[oldId];
+    setActions(updatedActions);
   };
 
   return (
@@ -32,19 +49,21 @@ const OpenAction = ({ actions, setActions }: OpenActionProps) => {
       <div className="input-container">
         <label>Open Actions</label>
         <div className="actions">
-          {actions.map((action, index) => (
+          {Object.entries(actions).map(([actionId, action]) => (
             <ActionForm
-              key={index}
+              key={actionId}
+              actionId={actionId}
               action={action}
               onChange={(updatedAction) =>
-                handleActionChange(index, updatedAction)
+                handleActionChange(actionId, updatedAction)
+              }
+              onIdChange={(newId: string) =>
+                handleActionIdChange(actionId, newId)
               }
             >
-              <div className="remove-action">
-                <button onClick={() => handleRemoveAction(index)}>
-                  Remove
-                </button>
-              </div>
+              <button onClick={() => handleRemoveAction(actionId)}>
+                Remove
+              </button>
             </ActionForm>
           ))}
           <div className="add-action">
