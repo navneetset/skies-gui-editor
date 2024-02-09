@@ -116,6 +116,8 @@ const IndexPage: React.FC<PageProps> = () => {
 
   const [config, setConfig] = useState({} as Config);
 
+  const [fileName, setFileName] = useState("export" as string);
+
   const updateConfig = () => {
     const newConfig: Config = {
       title: uiName,
@@ -140,7 +142,7 @@ const IndexPage: React.FC<PageProps> = () => {
   useEffect(() => {
     if (Object.keys(config).length > 0) {
       // Check if config is not empty
-      exportConfig(config);
+      exportConfig(config, fileName);
     }
   }, [config]);
 
@@ -199,6 +201,13 @@ const IndexPage: React.FC<PageProps> = () => {
           </button>
 
           <div className="editor">
+            <div className="input-container">
+              <label>File Name</label>
+              <input
+                value={fileName}
+                onChange={(e) => setFileName(e.target.value)}
+              />
+            </div>
             <div className="input-container">
               <label>UI Name</label>
               <input
