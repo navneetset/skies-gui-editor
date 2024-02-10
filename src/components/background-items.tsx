@@ -1,6 +1,6 @@
 import React from "react";
 import ItemSelection from "./item-selection";
-import { Item } from "../interface/item";
+import { Item } from "../resources/export-config";
 import styled from "styled-components";
 
 interface BackgroundItemsProps {

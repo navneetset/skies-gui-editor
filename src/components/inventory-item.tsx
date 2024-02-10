@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 interface InventoryItemProps {
   item: {
-    icon: string;
+    icon?: string;
   };
   onMouseEnter: (e: React.MouseEvent) => void;
   onMouseLeave: (e: React.MouseEvent) => void;

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Action, ActionType } from "../resources/export-config"; // Adjust import path as necessary
 import styled from "styled-components";
 import NBTTooltip from "./nbt-tooltip";
+import NBTValidator from "./nbt-validator";
+import ItemSelection from "./item-selection";
 
 interface ActionFormProps {
   action: Action;
@@ -9,6 +11,7 @@ interface ActionFormProps {
   onIdChange: (newId: string) => void;
   onChange: (updatedAction: Action) => void;
   children?: React.ReactNode;
+  itemSelectorWidth?: string;
 }
 
 interface TextInputProps {
@@ -26,7 +29,11 @@ const TextInput = ({ value, onChange }: TextInputProps) => (
   <input type="text" value={value} onChange={(e) => onChange(e.target.value)} />
 );
 
-const TextAreaInput = ({ value, onChange, onBlur }: TextAreaInputProps) => (
+export const TextAreaInput = ({
+  value,
+  onChange,
+  onBlur,
+}: TextAreaInputProps) => (
   <textarea
     style={{ height: "6rem", width: "100%" }}
     value={value}
@@ -88,6 +95,7 @@ const ActionForm = ({
   onIdChange,
   onChange,
   children,
+  itemSelectorWidth,
 }: ActionFormProps) => {
   const [selectedActionType, setSelectedActionType] = useState(action.type);
   const [localActionId, setLocalActionId] = useState(actionId);
@@ -242,9 +250,17 @@ const ActionForm = ({
       case "currency":
       case "item":
         return (
-          <TextInput
-            value={(action[field] as string) || ""}
-            onChange={(val) => handleChange(field, val)}
+          <ItemSelection
+            selectedItem={
+              //string to item
+              {
+                name: action[field] as string,
+                material: action[field] as string,
+                icon: `icon-minecraft-${action[field] as string}`,
+              }
+            }
+            setSelectedItem={(val) => handleChange(field, val.material)}
+            width={itemSelectorWidth}
           />
         );
       case "strict":
@@ -262,29 +278,10 @@ const ActionForm = ({
               onChange={handleNbtChange}
               onBlur={handleNbtBlur}
             />
-            {!nbtValid ? (
-              <p
-                style={{
-                  color: "red",
-                  fontSize: "0.6rem",
-                  marginTop: "0.5rem",
-                  textShadow: "1px 1px 0px #000",
-                }}
-              >
-                ❌ Invalid JSON
-              </p>
-            ) : (
-              <p
-                style={{
-                  color: "#97EA36",
-                  fontSize: "0.6rem",
-                  marginTop: "0.5rem",
-                  textShadow: "1px 1px 0px #000",
-                }}
-              >
-                ✅ Valid JSON
-              </p>
-            )}
+            <NBTValidator
+              nbt={localNbt}
+              onValidNbt={(parsedNbt) => handleChange("nbt", parsedNbt)}
+            />
           </div>
         );
 

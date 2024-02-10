@@ -2,16 +2,18 @@ import React, { useEffect, useState } from "react";
 import { minecraftIcons } from "../resources/minecraft-icons";
 import CreatableSelect from "react-select/creatable";
 import styled from "styled-components";
-import { Item } from "../interface/item";
+import { Item } from "../resources/export-config";
 
 interface ItemSelectionProps {
   selectedItem: Item;
   setSelectedItem: (item: Item) => void;
+  width?: string;
 }
 
 const ItemSelection = ({
   selectedItem,
   setSelectedItem,
+  width,
 }: ItemSelectionProps) => {
   const selectOptions = minecraftIcons.map((icon) => ({
     value: `minecraft:${icon.name}`,
@@ -43,6 +45,7 @@ const ItemSelection = ({
 
   return (
     <SelectStyles
+      $width={width}
       options={selectOptions}
       value={selectedOption} // Set the selected option here
       onChange={(option: any) => {
@@ -57,7 +60,6 @@ const ItemSelection = ({
       }}
       onInputChange={(inputValue) => setInputValue(inputValue)}
       isSearchable={true}
-      isClearable={true}
       placeholder="Search or enter an item name"
       formatCreateLabel={(inputValue) => `Custom: ${inputValue}`}
       isValidNewOption={(inputValue) => {
@@ -77,9 +79,9 @@ const ItemSelection = ({
 
 export default ItemSelection;
 
-const SelectStyles = styled(CreatableSelect)`
+const SelectStyles = styled(CreatableSelect)<{ $width?: string }>`
   font-size: 0.6rem;
-  width: 460px;
+  width: ${({ $width }) => $width || "460px"};
   color: #000;
   margin-top: 10px;
 

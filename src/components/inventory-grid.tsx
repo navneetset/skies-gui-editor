@@ -2,13 +2,16 @@ import React from "react";
 import styled from "styled-components";
 import InventoryItem from "./inventory-item";
 import deserializeMiniMessage from "./deserialize-mini-message";
+import { Item } from "../resources/export-config";
 
 interface InventoryGridProps {
   uiName: string;
   rows: number;
-  items: any[];
+  items: Item[];
   editingSlot: number;
   editModalOpen: boolean;
+  backgroundSlots: number[];
+  enableBackground: boolean;
   onItemMouseEnter: (e: React.MouseEvent, item: any) => void;
   onItemMouseLeave: () => void;
   setEditingSlot: (slot: number) => void;
@@ -21,6 +24,8 @@ const InventoryGrid = ({
   items,
   editingSlot,
   editModalOpen,
+  backgroundSlots,
+  enableBackground,
   onItemMouseEnter,
   onItemMouseLeave,
   setEditingSlot,
@@ -32,9 +37,20 @@ const InventoryGrid = ({
     </div>
     {items.map((item, index) => (
       <div
+        data-slot={index}
         key={`${item.name}-${index}`}
         onClick={() => {
+          if (backgroundSlots.includes(index) && enableBackground) {
+            alert("This slot is a background slot.");
+            return;
+          }
+          // if slot has no item, don't open modal
+          if (item.name == "air" || !item.material) {
+            alert("This slot has no item. Add an item first.");
+            return;
+          }
           setEditingSlot(index);
+          console.log("Editing slot", index);
           setEditModalOpen(true);
         }}
       >
@@ -80,6 +96,23 @@ const ChestInventory = styled.div<{
 
     span {
       margin-left: 5px;
+    }
+  }
+
+  // on hover, show slot number
+  div {
+    position: relative;
+    &:hover {
+      &:after {
+        content: attr(data-slot);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #000;
+        color: #fff;
+        padding: 2px;
+        font-size: 10px;
+      }
     }
   }
 `;

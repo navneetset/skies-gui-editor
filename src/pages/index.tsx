@@ -2,7 +2,6 @@ import * as React from "react";
 import type { HeadFC, PageProps } from "gatsby";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import { Item } from "../interface/item";
 import Header from "../components/header";
 import InventoryGrid from "../components/inventory-grid";
 import BackgroundItems from "../components/background-items";
@@ -13,6 +12,7 @@ import {
   Actions,
   Config,
   exportConfig,
+  Item,
 } from "../resources/export-config";
 import OpenAction from "../components/open-action";
 import CloseAction from "../components/close-action";
@@ -174,7 +174,11 @@ const IndexPage: React.FC<PageProps> = () => {
       <GlobalStylesComponent />
       {editModalOpen && (
         <>
-          <ConfigModal />
+          <ConfigModal
+            allItems={items}
+            clickedSlot={editingSlot}
+            setClose={() => setEditModalOpen(false)}
+          />
           <OverlayBackground />
         </>
       )}
@@ -187,6 +191,10 @@ const IndexPage: React.FC<PageProps> = () => {
             items={items}
             editingSlot={editingSlot}
             editModalOpen={editModalOpen}
+            backgroundSlots={backgroundSlots
+              .split(",")
+              .map((slot) => parseInt(slot))}
+            enableBackground={enableBackground}
             onItemMouseEnter={(e, item) => {
               setHoveredItem({ item, x: e.clientX, y: e.clientY });
             }}
@@ -197,7 +205,15 @@ const IndexPage: React.FC<PageProps> = () => {
             setEditModalOpen={setEditModalOpen}
           />
 
-          <button className="add-item-button">
+          <button
+            className="add-item-button"
+            onClick={() => {
+              // open the modal
+              setEditModalOpen(true);
+              // set the editing slot to the first empty slot
+              setEditingSlot(items.findIndex((item) => item.name === "air"));
+            }}
+          >
             <span>Add Item</span>
           </button>
 

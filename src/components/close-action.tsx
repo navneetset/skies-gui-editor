@@ -51,6 +51,7 @@ const CloseAction = ({ actions, setActions }: CloseActionProps) => {
         <div className="actions">
           {Object.entries(actions).map(([actionId, action]) => (
             <ActionForm
+              itemSelectorWidth="370px"
               key={actionId}
               actionId={actionId}
               action={action}
