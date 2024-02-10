@@ -123,7 +123,29 @@ const IndexPage: React.FC<PageProps> = () => {
   const [fileName, setFileName] = useState("export" as string);
 
   const updateConfig = () => {
-    const newConfig: Config = {
+    let groupedItems: any = {};
+
+    items.forEach((item, index) => {
+      if (item.id) {
+        if (!groupedItems[item.id]) {
+          // Initialize the item with relevant fields and an empty slots array
+          groupedItems[item.id] = {
+            item: item.material,
+            slots: [],
+            name: item.name || undefined,
+            amount: item.amount,
+            lore: item.lore,
+            click_actions: item.click_actions,
+            nbt: item.nbt,
+          };
+        }
+        if (!groupedItems[item.id].slots.includes(index)) {
+          groupedItems[item.id].slots.push(index); // Add unique slot index
+        }
+      }
+    });
+
+    const newConfig = {
       title: uiName,
       size: inventoryRows,
       alias_commands: aliasCommands,
@@ -137,6 +159,7 @@ const IndexPage: React.FC<PageProps> = () => {
             name: backgroundItemName,
           },
         }),
+        ...groupedItems,
       },
     };
 

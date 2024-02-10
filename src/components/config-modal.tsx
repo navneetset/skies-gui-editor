@@ -25,6 +25,7 @@ const ConfigModal = ({
       ? null
       : allItems[clickedSlot];
   const [itemName, setItemName] = useState(item?.name || "");
+  const [amount, setAmount] = useState(item?.amount || 1);
   const [selectedItem, setSelectedItem] = useState(item);
   const [slots, setSlots] = useState(item?.slots || [clickedSlot]);
   const [lores, setLores] = useState(item?.lore || [""]);
@@ -261,6 +262,7 @@ const ConfigModal = ({
     const newItem = {
       id: itemId,
       name: itemName || undefined,
+      amount,
       slots,
       lore: lores,
       nbt: parsedNbt,
@@ -316,6 +318,14 @@ const ConfigModal = ({
             placeholder="<green>Stone"
             value={itemName}
             onChange={(e) => setItemName(e.target.value)}
+          />
+        </div>
+        <div className="input-container">
+          <label>Amount</label>
+          <input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(Number(e.target.value))}
           />
         </div>
         <div className="input-container">
