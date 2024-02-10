@@ -59,52 +59,34 @@ const IndexPage: React.FC<PageProps> = () => {
   const [enableBackground, setEnableBackground] = useState(true);
 
   useEffect(() => {
-    // if background is not enabled, then set background items to air
-    if (!enableBackground) {
-      setItems(
-        items.map((item, index) => {
-          return backgroundSlots.includes(index.toString())
-            ? { name: "air", material: "minecraft:air", icon: "air" }
-            : item;
-        })
-      );
-      return;
-    }
-
-    // update allItems state when backgroundItem changes
-    // check if the backgroundSlots are valid and are all numbers
-    const slotsToFill = backgroundSlots.split(",");
-
-    // if empty string, then fill all slots with air
-    if (backgroundSlots === "") {
-      setItems(
-        items.map((item, index) => {
-          return backgroundSlots.includes(index.toString())
-            ? { name: "air", material: "minecraft:air", icon: "air" }
-            : item;
-        })
-      );
-      return;
-    }
-
-    if (slotsToFill.some((slot) => isNaN(parseInt(slot)))) {
-      console.error("Invalid slot number");
-      return;
-    }
-
-    // then check if the slots are within the inventory range
-    if (slotsToFill.some((slot) => parseInt(slot) > items.length - 1)) {
-      alert("Background slot numbers out of range");
-      return;
-    }
-
-    // update only the specified background slots
-    const updatedItems = items.map((item, index) => {
-      if (slotsToFill.includes(index.toString())) {
-        return backgroundItem;
-      }
-      return item;
+    // Reset items based on the new inventoryRows
+    const newItems = Array(inventoryRowMap[inventoryRows]).fill({
+      name: "air",
+      material: "minecraft:air",
+      icon: "air",
     });
+
+    // If background is not enabled, just update the items state
+    if (!enableBackground) {
+      setItems(newItems);
+      return;
+    }
+
+    // Extract and validate the background slots
+    const slotsToFill = backgroundSlots
+      .split(",")
+      .map((slot) => parseInt(slot));
+
+    // Validate each slot number
+    if (slotsToFill.some((slot) => isNaN(slot) || slot > newItems.length - 1)) {
+      console.error("Invalid slot number or slot out of range");
+      return;
+    }
+
+    // Apply the background item to the specified slots
+    const updatedItems = newItems.map((item, index) =>
+      slotsToFill.includes(index) ? backgroundItem : item
+    );
 
     setItems(updatedItems);
   }, [
