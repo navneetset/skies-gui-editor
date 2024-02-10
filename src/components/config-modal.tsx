@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { Item } from "../resources/export-config";
 import { TextAreaInput } from "./action-form";
 import ItemSelection from "./item-selection";
+import NBTValidator from "./nbt-validator";
+import NBTTooltip from "./nbt-tooltip";
 
 interface ConfigModalProps {
   item?: Item;
@@ -90,6 +92,12 @@ const ConfigModal = ({
     setLores(newLores);
   };
 
+  const [localNbt, setLocalNbt] = useState("{}");
+
+  const handleNbtChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setLocalNbt(e.target.value);
+  };
+
   return (
     <ModalStyle open>
       <h1>Item Configurator</h1>
@@ -158,7 +166,14 @@ const ConfigModal = ({
         </div>
 
         <div className="input-container">
-          <label>NBT</label>
+          <label style={{ marginBottom: "0.5rem" }}>
+            NBT <NBTTooltip />
+          </label>
+          <TextAreaInput value={localNbt} onChange={handleNbtChange} />
+          <NBTValidator
+            nbt={localNbt}
+            onValidNbt={(parsedNbt) => setLocalNbt(JSON.stringify(parsedNbt))}
+          />
         </div>
       </div>
       <div className="button-container" onClick={() => setClose(false)}>

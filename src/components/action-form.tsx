@@ -22,23 +22,17 @@ interface TextInputProps {
 interface TextAreaInputProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onBlur: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
 const TextInput = ({ value, onChange }: TextInputProps) => (
   <input type="text" value={value} onChange={(e) => onChange(e.target.value)} />
 );
 
-export const TextAreaInput = ({
-  value,
-  onChange,
-  onBlur,
-}: TextAreaInputProps) => (
+export const TextAreaInput = ({ value, onChange }: TextAreaInputProps) => (
   <textarea
-    style={{ height: "6rem", width: "100%" }}
+    style={{ height: "4.5rem", width: "98%", borderRadius: "5px" }}
     value={value}
     onChange={(e) => onChange(e)}
-    onBlur={(e) => onBlur(e)}
     className="nbt-input"
   />
 );
@@ -163,31 +157,8 @@ const ActionForm = ({
     }
   };
 
-  const [nbtValid, setNbtValid] = useState(true);
-
   const handleNbtChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    // check if the JSON is valid
     setLocalNbt(e.target.value);
-
-    try {
-      const parsedNbt = JSON.parse(e.target.value);
-      onChange({ ...action, nbt: parsedNbt });
-      setNbtValid(true);
-    } catch (e) {
-      setNbtValid(false);
-      console.error(e);
-    }
-  };
-
-  const handleNbtBlur = () => {
-    try {
-      const parsedNbt = JSON.parse(localNbt);
-      onChange({ ...action, nbt: parsedNbt });
-      setNbtValid(true);
-    } catch (e) {
-      setNbtValid(false);
-      console.error(e);
-    }
   };
 
   const handleActionTypeChange = (newType: ActionType) => {
@@ -273,11 +244,7 @@ const ActionForm = ({
       case "nbt":
         return (
           <div>
-            <TextAreaInput
-              value={localNbt}
-              onChange={handleNbtChange}
-              onBlur={handleNbtBlur}
-            />
+            <TextAreaInput value={localNbt} onChange={handleNbtChange} />
             <NBTValidator
               nbt={localNbt}
               onValidNbt={(parsedNbt) => handleChange("nbt", parsedNbt)}
