@@ -59,11 +59,13 @@ const IndexPage: React.FC<PageProps> = () => {
   const [enableBackground, setEnableBackground] = useState(true);
 
   useEffect(() => {
-    // if background is not enabled, then set all items to air
+    // if background is not enabled, then set background items to air
     if (!enableBackground) {
       setItems(
-        items.map((item) => {
-          return { name: "air", material: "minecraft:air", icon: "air" };
+        items.map((item, index) => {
+          return backgroundSlots.includes(index.toString())
+            ? { name: "air", material: "minecraft:air", icon: "air" }
+            : item;
         })
       );
       return;
@@ -72,13 +74,14 @@ const IndexPage: React.FC<PageProps> = () => {
     // update allItems state when backgroundItem changes
     // check if the backgroundSlots are valid and are all numbers
     const slotsToFill = backgroundSlots.split(",");
-    // first check if the slots are valid
 
     // if empty string, then fill all slots with air
     if (backgroundSlots === "") {
       setItems(
-        items.map((item) => {
-          return { name: "air", material: "minecraft:air", icon: "air" };
+        items.map((item, index) => {
+          return backgroundSlots.includes(index.toString())
+            ? { name: "air", material: "minecraft:air", icon: "air" }
+            : item;
         })
       );
       return;
@@ -88,18 +91,19 @@ const IndexPage: React.FC<PageProps> = () => {
       console.error("Invalid slot number");
       return;
     }
+
     // then check if the slots are within the inventory range
     if (slotsToFill.some((slot) => parseInt(slot) > items.length - 1)) {
       alert("Background slot numbers out of range");
       return;
     }
-    // slots that are not filled with the backgroundItem should be filled with air
-    const updatedItems = items.map((_item, index) => {
+
+    // update only the specified background slots
+    const updatedItems = items.map((item, index) => {
       if (slotsToFill.includes(index.toString())) {
         return backgroundItem;
-      } else {
-        return { name: "air", material: "minecraft:air", icon: "air" };
       }
+      return item;
     });
 
     setItems(updatedItems);
@@ -176,6 +180,7 @@ const IndexPage: React.FC<PageProps> = () => {
         <>
           <ConfigModal
             allItems={items}
+            setAllItems={setItems}
             clickedSlot={editingSlot}
             setClose={() => setEditModalOpen(false)}
           />

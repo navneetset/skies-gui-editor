@@ -8,22 +8,47 @@ import NBTTooltip from "./nbt-tooltip";
 import SelectionTooltip from "./selection-tooltip";
 
 interface ConfigModalProps {
-  item?: Item;
   allItems: Item[];
   clickedSlot: number;
+  setAllItems: (items: Item[]) => void;
   setClose: (close: boolean) => void;
 }
 
 const ConfigModal = ({
-  item,
   allItems,
   clickedSlot,
+  setAllItems,
   setClose,
 }: ConfigModalProps) => {
+  const item =
+    allItems[clickedSlot].material === "minecraft:air"
+      ? null
+      : allItems[clickedSlot];
   const [itemName, setItemName] = useState(item?.name || "");
   const [selectedItem, setSelectedItem] = useState(item);
   const [slots, setSlots] = useState(item?.slots || [clickedSlot]);
   const [lores, setLores] = useState(item?.lore || [""]);
+  const [itemId, setItemId] = useState(item?.id || "");
+
+  const editMode = item && item.id ? true : false;
+  const [initialEditSlots, setInitialEditSlots] = useState(item?.slots || []);
+
+  console.log("Edit mode", editMode);
+
+  // find all identical items and set the slots to the same
+  useEffect(() => {
+    if (item) {
+      const identicalItems = allItems.filter(
+        (i) => i.material === item.material && i.id == item.id
+      );
+      const identicalSlots = identicalItems.map((i) => allItems.indexOf(i));
+      // squashing the array to remove duplicates
+      setSlots([...new Set([...slots, ...identicalSlots])]);
+      setInitialEditSlots([
+        ...new Set([...initialEditSlots, ...identicalSlots]),
+      ]);
+    }
+  }, [item]);
 
   const handleAddSlot = () => {
     // add next available air slot
@@ -38,11 +63,9 @@ const ConfigModal = ({
       return;
     }
 
-    if (allItems[newSlot - 1].material !== "minecraft:air") {
+    if (allItems[newSlot].material !== "minecraft:air") {
       alert(
-        `Slot ${newSlot} is already occupied by ${
-          allItems[newSlot - 1].name
-        }. Please adjust accordingly before saving.`
+        `Slot ${newSlot} is already occupied by ${allItems[newSlot].name}. Please adjust accordingly before saving.`
       );
       return;
     }
@@ -58,6 +81,7 @@ const ConfigModal = ({
       alert("Item must have at least one slot.");
       return;
     }
+
     const newSlots = slots.filter((_, slotIndex) => slotIndex !== index);
     setSlots(newSlots);
   };
@@ -143,13 +167,156 @@ const ConfigModal = ({
     setActions(updatedActions);
   };
 
+  const handleSave = () => {
+    console.log("Saving item configuration...");
+
+    // check if ID is empty
+    if (!itemId) {
+      alert("Item ID cannot be empty.");
+      return;
+    }
+
+    let tempAllItems = [...allItems];
+    if (editMode) {
+      const removedSlots = initialEditSlots.filter(
+        (slot) => !slots.includes(slot)
+      );
+      for (const slot of removedSlots) {
+        allItems[slot] = {
+          name: "air",
+          material: "minecraft:air",
+          icon: "air",
+        };
+      }
+    }
+
+    // check if there are identical items with the same ID and material outside of the slots in case that we removed it, so we can replace it with air
+    const identicalItems = allItems.filter(
+      (i) => i.material === selectedItem?.material && i.id === itemId
+    );
+
+    for (const item of identicalItems) {
+      if (!slots.includes(allItems.indexOf(item))) {
+        const newAllItems = [...allItems];
+        newAllItems[allItems.indexOf(item)] = {
+          name: "air",
+          material: "minecraft:air",
+          icon: "air",
+        };
+        setAllItems(newAllItems);
+      }
+    }
+
+    // check if ID is unique to the slots, if any non local slots are using the same ID, alert the user
+    const slotsWithSameId = allItems.filter(
+      (item, index) => item.id === itemId && !slots.includes(index)
+    );
+    if (slotsWithSameId.length > 0) {
+      alert(
+        `Item ID ${itemId} is already in use by another item. Please use a unique ID.`
+      );
+      return;
+    }
+
+    // Validate the NBT JSON
+    let parsedNbt;
+    try {
+      parsedNbt = JSON.parse(localNbt);
+    } catch (e) {
+      alert(
+        "Invalid NBT. Please correct before saving. If you do not wish to use NBT, please leave the field as {}"
+      );
+      return;
+    }
+
+    // Ensure an item is selected
+    if (!selectedItem) {
+      alert("Please select an item before saving.");
+      return;
+    }
+
+    // Validate the slots
+    for (const slot of slots) {
+      if (slot >= allItems.length) {
+        alert(
+          "Slot exceeds inventory size. Please adjust accordingly before saving."
+        );
+        return;
+      }
+
+      if (
+        allItems[slot].material !== "minecraft:air" &&
+        allItems[slot].id !== itemId
+      ) {
+        alert(
+          `Slot ${slot + 1} is already occupied by ${
+            allItems[slot].name
+          }. Please adjust accordingly before saving.`
+        );
+        return;
+      }
+    }
+
+    // Create a new item object
+    const newItem = {
+      id: itemId,
+      name: itemName || undefined,
+      slots,
+      lore: lores,
+      nbt: parsedNbt,
+      click_actions: actions,
+      material: selectedItem?.material || "minecraft:stone",
+      icon: selectedItem?.icon,
+    };
+
+    // Update the allItems array
+    const newAllItems = [...allItems];
+    for (const slot of slots) {
+      newAllItems[slot] = newItem;
+    }
+
+    setAllItems(newAllItems);
+    setClose(false);
+
+    console.log(newAllItems);
+  };
+
+  const handleDelete = () => {
+    const newAllItems = [...allItems];
+    // flat map for slots and identical items
+    const slotsToDelete = [...initialEditSlots];
+    for (const slot of slotsToDelete) {
+      newAllItems[slot] = {
+        name: "air",
+        material: "minecraft:air",
+        icon: "air",
+      };
+    }
+    setAllItems(newAllItems);
+    setClose(false);
+  };
+
   return (
     <ModalStyle open>
       <h1>Item Configurator</h1>
       <div className="form-container">
         <div className="input-container">
+          <label>Item ID</label>
+          <input
+            type="text"
+            placeholder="stone_item"
+            value={itemId}
+            onChange={(e) => setItemId(e.target.value)}
+          />
+        </div>
+        <div className="input-container">
           <label>Item Name</label>
-          <input type="text" placeholder="<green>Stone" />
+          <input
+            type="text"
+            placeholder="<green>Stone"
+            value={itemName}
+            onChange={(e) => setItemName(e.target.value)}
+          />
         </div>
         <div className="input-container">
           <label>
@@ -230,6 +397,7 @@ const ConfigModal = ({
             {Object.entries(actions).map(([actionId, action]) => (
               <ActionForm
                 itemSelectorWidth="370px"
+                enableClickType={true}
                 key={actionId}
                 actionId={actionId}
                 action={action}
@@ -254,9 +422,16 @@ const ConfigModal = ({
           </div>
         </div>
       </div>
-      <div className="button-container" onClick={() => setClose(false)}>
-        <button>Close</button>
-        <button className="save-button">Save</button>
+      <div className="button-container">
+        <button onClick={() => setClose(false)}>Close</button>
+        {editMode && (
+          <button className="delete-button" onClick={handleDelete}>
+            Delete
+          </button>
+        )}
+        <button className="save-button" onClick={handleSave}>
+          Save
+        </button>
       </div>
     </ModalStyle>
   );
@@ -354,6 +529,15 @@ const ModalStyle = styled.dialog`
 
       &.save-button {
         background: #5fde5f;
+      }
+    }
+
+    &.delete-button {
+      background: #af4545;
+      color: #fff;
+
+      &:hover {
+        background: #f35555;
       }
     }
 
@@ -465,5 +649,9 @@ const ModalStyle = styled.dialog`
   label {
     font-size: 0.7rem;
     font-family: Minecraftia;
+  }
+
+  .actions {
+    color: white;
   }
 `;

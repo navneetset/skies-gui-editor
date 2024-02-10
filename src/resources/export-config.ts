@@ -32,10 +32,11 @@ export interface Config {
   export type ActionType = "MESSAGE" | "COMMAND_CONSOLE" | "COMMAND_PLAYER" | "BROADCAST" | "PLAYSOUND" | "OPEN_GUI" | "CLOSE_GUI" | "REFRESH_GUI" | "GIVE_XP" | "CURRENCY_DEPOSIT" | "CURRENCY_WITHDRAW" | "CURRENCY_SET" | "GIVE_ITEM" | "TAKE_ITEM";
   
   export interface Item {
+    id?: string;
     item?: string;
     slots?: number[];
     amount?: number;
-    name: string;
+    name?: string;
     lore?: string[];
     nbt?: NBT;
     click_actions?: Actions;

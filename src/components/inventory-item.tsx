@@ -19,8 +19,14 @@ const InventoryItem = ({
     return !!minecraftIcons.find((icon) => icon.css === iconName);
   };
 
-  const iconName = checkIconExists(`icon-minecraft-${item.icon}`)
-    ? `icon-minecraft-${item.icon}`
+  // Check if 'icon-minecraft' is already included in the item.icon
+  const prefixedIconName =
+    item.icon && item.icon.startsWith("icon-minecraft-")
+      ? item.icon
+      : `icon-minecraft-${item.icon}`;
+
+  const iconName = checkIconExists(prefixedIconName)
+    ? prefixedIconName
     : "icon-minecraft-mob-goat-face";
 
   return (

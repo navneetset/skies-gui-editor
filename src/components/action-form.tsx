@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Action, ActionType } from "../resources/export-config"; // Adjust import path as necessary
+import { Action, ActionType, ClickType } from "../resources/export-config"; // Adjust import path as necessary
 import styled from "styled-components";
 import NBTTooltip from "./nbt-tooltip";
 import NBTValidator from "./nbt-validator";
@@ -9,6 +9,7 @@ import SelectionTooltip from "./selection-tooltip";
 interface ActionFormProps {
   action: Action;
   actionId: string;
+  enableClickType?: boolean;
   onIdChange: (newId: string) => void;
   onChange: (updatedAction: Action) => void;
   children?: React.ReactNode;
@@ -87,6 +88,7 @@ const ArrayInput = ({ values, onChange, placeholder }: ArrayInputProps) => (
 const ActionForm = ({
   action,
   actionId,
+  enableClickType,
   onIdChange,
   onChange,
   children,
@@ -94,6 +96,11 @@ const ActionForm = ({
 }: ActionFormProps) => {
   const [selectedActionType, setSelectedActionType] = useState(action.type);
   const [localActionId, setLocalActionId] = useState(actionId);
+
+  const [selectedClickType, setSelectedClickType] = useState(
+    enableClickType ? action.click : undefined
+  );
+
   const [collapsed, setCollapsed] = useState(false);
   const [localNbt, setLocalNbt] = useState("{}");
 
@@ -117,6 +124,21 @@ const ActionForm = ({
     GIVE_ITEM: ["item", "amount", "nbt"],
     TAKE_ITEM: ["item", "amount", "nbt", "strict"],
   };
+
+  const clickTypes = [
+    "ANY",
+    "LEFT_CLICK",
+    "SHIFT_LEFT_CLICK",
+    "ANY_LEFT_CLICK",
+    "RIGHT_CLICK",
+    "SHIFT_RIGHT_CLICK",
+    "ANY_RIGHT_CLICK",
+    "ANY_CLICK",
+    "ANY_MAIN_CLICK",
+    "ANY_SHIFT_CLICK",
+    "MIDDLE_CLICK",
+    "THROW",
+  ];
 
   const initializeActionFields = (type: ActionType): Action => {
     let newAction = { ...action, type: type };
@@ -166,6 +188,11 @@ const ActionForm = ({
     setSelectedActionType(newType);
     const newAction = initializeActionFields(newType);
     onChange(newAction);
+  };
+
+  const handleClickTypeChange = (newClickType: ClickType) => {
+    setSelectedClickType(newClickType);
+    onChange({ ...action, click: newClickType });
   };
 
   const handleArrayChange = (
@@ -278,6 +305,22 @@ const ActionForm = ({
           ))}
         </select>
       </div>
+
+      {enableClickType && (
+        <div className="form-item">
+          <label>Click Type</label>
+          <select
+            value={selectedClickType || "ANY"}
+            onChange={(e) => handleClickTypeChange(e.target.value as ClickType)}
+          >
+            {clickTypes.map((clickType) => (
+              <option key={clickType} value={clickType}>
+                {clickType}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="form-item">
         <label>Action ID</label>

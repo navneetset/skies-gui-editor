@@ -49,8 +49,8 @@ const InventoryGrid = ({
             alert("This slot has no item. Add an item first.");
             return;
           }
+          
           setEditingSlot(index);
-          console.log("Editing slot", index);
           setEditModalOpen(true);
         }}
       >
