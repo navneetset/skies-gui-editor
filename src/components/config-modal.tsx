@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Item } from "../resources/export-config";
-import { TextAreaInput } from "./action-form";
+import { Action, Actions, Item } from "../resources/export-config";
+import ActionForm, { TextAreaInput } from "./action-form";
 import ItemSelection from "./item-selection";
 import NBTValidator from "./nbt-validator";
 import NBTTooltip from "./nbt-tooltip";
+import SelectionTooltip from "./selection-tooltip";
 
 interface ConfigModalProps {
   item?: Item;
@@ -98,6 +99,50 @@ const ConfigModal = ({
     setLocalNbt(e.target.value);
   };
 
+  const [actions, setActions] = useState({
+    play_sound: {
+      type: "PLAYSOUND",
+      sound: "cobblemon:pc.on",
+      volume: 1.0,
+      pitch: 1.0,
+    },
+  } as Actions);
+
+  const [actionIdCounter, setActionIdCounter] = useState(0);
+
+  const handleActionChange = (actionId: string, updatedAction: Action) => {
+    setActions({ ...actions, [actionId]: updatedAction });
+  };
+
+  const handleAddAction = () => {
+    const newActionId = `action_${actionIdCounter}`; // Create a unique ID
+    setActionIdCounter(actionIdCounter + 1); // Increment the counter
+
+    const newAction: Action = {
+      type: "MESSAGE", // Default type for new action
+      message: [], // Default values for the new action
+    };
+    setActions({ ...actions, [newActionId]: newAction });
+  };
+
+  const handleRemoveAction = (actionId: string) => {
+    const newActions = { ...actions };
+    delete newActions[actionId];
+    setActions(newActions);
+  };
+
+  const handleActionIdChange = (oldId: string, newId: string) => {
+    const updatedActions = { ...actions };
+    if (updatedActions[newId]) {
+      alert(`Action with ID '${newId}' already exists.`);
+      return;
+    }
+
+    updatedActions[newId] = updatedActions[oldId];
+    delete updatedActions[oldId];
+    setActions(updatedActions);
+  };
+
   return (
     <ModalStyle open>
       <h1>Item Configurator</h1>
@@ -107,6 +152,9 @@ const ConfigModal = ({
           <input type="text" placeholder="<green>Stone" />
         </div>
         <div className="input-container">
+          <label>
+            Item <SelectionTooltip />
+          </label>
           <ItemSelection
             selectedItem={selectedItem as Item}
             setSelectedItem={setSelectedItem}
@@ -175,6 +223,36 @@ const ConfigModal = ({
             onValidNbt={(parsedNbt) => setLocalNbt(JSON.stringify(parsedNbt))}
           />
         </div>
+
+        <div className="input-container">
+          <label>Click Actions</label>
+          <div className="actions">
+            {Object.entries(actions).map(([actionId, action]) => (
+              <ActionForm
+                itemSelectorWidth="370px"
+                key={actionId}
+                actionId={actionId}
+                action={action}
+                onChange={(updatedAction) =>
+                  handleActionChange(actionId, updatedAction)
+                }
+                onIdChange={(newId: string) =>
+                  handleActionIdChange(actionId, newId)
+                }
+              >
+                <button
+                  className="remove-button"
+                  onClick={() => handleRemoveAction(actionId)}
+                >
+                  Remove
+                </button>
+              </ActionForm>
+            ))}
+          </div>
+          <div className="add-action button-container">
+            <button onClick={handleAddAction}>Add Action</button>
+          </div>
+        </div>
       </div>
       <div className="button-container" onClick={() => setClose(false)}>
         <button>Close</button>
@@ -208,7 +286,48 @@ const ModalStyle = styled.dialog`
   .button-container {
     display: flex;
     justify-content: space-between;
-    margin-top: 1rem;
+
+    .remove-button {
+      background: #af4545;
+      color: #fff;
+      margin-left: 0.5rem;
+
+      &:hover {
+        background: #f35555;
+      }
+    }
+
+    .collapse-button {
+      background: #6e6e6e;
+      color: #fff;
+
+      &:hover {
+        background: #8e8e8e;
+      }
+    }
+
+    .expand-button {
+      background: #686e97;
+      color: #fff;
+
+      &:hover {
+        background: #8e8eaf;
+      }
+    }
+  }
+
+  .add-action {
+    button {
+      background: #c6c6c6;
+      font-size: 0.5rem;
+      cursor: pointer;
+
+      &:hover {
+        background: #b3b3b3;
+        transform: scale(1.05);
+        translate: translateY(-1.5px);
+      }
+    }
   }
 
   button {
@@ -218,7 +337,6 @@ const ModalStyle = styled.dialog`
     border: 1px solid #000;
     background: #eab6b6;
     font-family: Minecraftia;
-    font-weight: bold;
     font-size: 0.65rem;
     cursor: pointer;
     transition: all 0.2s ease-in-out;

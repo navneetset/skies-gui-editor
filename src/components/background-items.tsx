@@ -2,6 +2,7 @@ import React from "react";
 import ItemSelection from "./item-selection";
 import { Item } from "../resources/export-config";
 import styled from "styled-components";
+import SelectionTooltip from "./selection-tooltip";
 
 interface BackgroundItemsProps {
   backgroundSlots: string;
@@ -23,7 +24,7 @@ const BackgroundItems = ({
   return (
     <BackgroundItemsStyles>
       <div className="input-container">
-        <label>Background Item</label>
+        <label>Background Item <SelectionTooltip /></label>
         <ItemSelection
           selectedItem={backgroundItem}
           setSelectedItem={setBackgroundItem}

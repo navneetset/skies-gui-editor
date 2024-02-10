@@ -36,7 +36,7 @@ const ItemSelection = ({
 
     return checkIconExists(`icon-minecraft-${iconName}`)
       ? `icon-minecraft-${iconName}`
-      : "icon-minecraft-unknown";
+      : "icon-minecraft-mob-goat-face";
   };
 
   const getTrimmedIconName = (iconName: string) => {

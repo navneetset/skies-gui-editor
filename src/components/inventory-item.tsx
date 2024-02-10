@@ -21,7 +21,7 @@ const InventoryItem = ({
 
   const iconName = checkIconExists(`icon-minecraft-${item.icon}`)
     ? `icon-minecraft-${item.icon}`
-    : "icon-minecraft-unknown";
+    : "icon-minecraft-mob-goat-face";
 
   return (
     <InventorySlot onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>

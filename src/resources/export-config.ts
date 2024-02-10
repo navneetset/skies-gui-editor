@@ -38,7 +38,7 @@ export interface Config {
     name: string;
     lore?: string[];
     nbt?: NBT;
-    click_actions?: { [key: string]: Action };
+    click_actions?: Actions;
     priority?: number;
     view_requirements?: ViewRequirements;
     material?: string;

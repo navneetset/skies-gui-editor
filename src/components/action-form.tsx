@@ -4,6 +4,7 @@ import styled from "styled-components";
 import NBTTooltip from "./nbt-tooltip";
 import NBTValidator from "./nbt-validator";
 import ItemSelection from "./item-selection";
+import SelectionTooltip from "./selection-tooltip";
 
 interface ActionFormProps {
   action: Action;
@@ -296,6 +297,7 @@ const ActionForm = ({
               {capitalizeFirstLetter(field)}{" "}
               {(field === "volume" || field == "pitch") && "[0-1.0]"}
               {field === "nbt" && <NBTTooltip />}
+              {field === "item" && <SelectionTooltip />}
             </label>
             {renderField(field)}
           </div>
